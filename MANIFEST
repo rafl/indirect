@@ -1,0 +1,23 @@
+Changes
+MANIFEST
+Makefile.PL
+README
+indirect.xs
+lib/indirect.pm
+samples/indirect.pl
+t/00-load.t
+t/10-good-no.t
+t/11-good-use.t
+t/20-bad-no.t
+t/21-bad-use.t
+t/22-bad-fatal.t
+t/30-scope.t
+t/90-boilerplate.t
+t/91-pod.t
+t/92-pod-coverage.t
+t/95-portability-files.t
+t/99-kwalitee.t
+t/data/bad.d
+t/data/good.d
+t/data/mixed.d
+META.yml                                 Module meta-data (added by MakeMaker)

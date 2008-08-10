@@ -1,0 +1,72 @@
+NAME
+    indirect - Lexically warn about using the indirect object syntax.
+
+VERSION
+    Version 0.01
+
+SYNOPSIS
+        no indirect;
+        my $x = new Apple 1, 2, 3; # warns
+        {
+         use indirect;
+         my $y = new Pear; # ok
+        }
+        no indirect ':fatal';
+        if (defied $foo) { ... } # croaks, note the typo
+
+DESCRIPTION
+    When enabled (or disabled as some may prefer, since you actually turn it
+    on by calling "no indirect"), this pragma warns about indirect object
+    syntax constructs that may have slipped into your code. This syntax is
+    now considered harmful, since its parsing has many quirks and its use is
+    error prone (when "sub" isn't defined, "sub $x" is actually interpreted
+    as "$x->sub").
+
+    It currently does not warn when the object is enclosed between braces
+    (like "meth { $obj } @args") or for core functions ("print" or "say").
+    This may change in the future, or may be added as optional features that
+    would be enabled by passing options to "unimport".
+
+METHODS
+  "unimport @opts"
+    Magically called when "no indirect @args" is encountered. Turns the
+    module on. If @opts contains ':fatal', the module will croak on the
+    first indirect syntax met.
+
+  "import"
+    Magically called at each "use indirect". Turns the module off.
+
+DEPENDENCIES
+    perl 5.9.4.
+
+    XSLoader (standard since perl 5.006).
+
+    Tests require IPC::Cmd (standard since 5.9.5).
+
+AUTHOR
+    Vincent Pit, "<perl at profvince.com>", <http://www.profvince.com>.
+
+    You can contact me by mail or on #perl @ FreeNode (vincent or
+    Prof_Vince).
+
+BUGS
+    Please report any bugs or feature requests to "bug-indirect at
+    rt.cpan.org", or through the web interface at
+    <http://rt.cpan.org/NoAuth/ReportBug.html?Queue=indirect>. I will be
+    notified, and then you'll automatically be notified of progress on your
+    bug as I make changes.
+
+SUPPORT
+    You can find documentation for this module with the perldoc command.
+
+        perldoc indirect
+
+ACKNOWLEDGEMENTS
+    Bram, for motivation and advices.
+
+COPYRIGHT & LICENSE
+    Copyright 2008 Vincent Pit, all rights reserved.
+
+    This program is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
