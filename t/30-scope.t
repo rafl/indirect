@@ -25,6 +25,7 @@ unless ($success) {
  diag $stderr;
  diag "Failed to execute data file (error $err_code)";
  fail "Couldn't run test $_" for 1 .. $total + 1;
+ exit $total + 1;
 }
 
 my %fail = map { $_ => 1 } 2, 3, 5, 7;
