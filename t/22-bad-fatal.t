@@ -21,5 +21,5 @@ use IPC::Cmd qw/run/;
           't/data/bad.d'
    ];
 
-$stderr = join "\n", @$stderr if ref $stderr eq 'ARRAY';
+$stderr = join '', @$stderr;
 ok(!$success && $err_code && $stderr =~ /^Indirect\s+call\s+of\s+method\s+"new"\s+on\s+object\s+"Hlagh1"/mg, 'croak when :fatal is specified');
