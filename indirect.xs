@@ -203,9 +203,13 @@ STATIC OP *indirect_ck_entersub(pTHX_ OP *o) {
    goto done;
   pm = indirect_map_fetch(om, &svm);
   po = indirect_map_fetch(oo, &svo);
-  if (pm && po && pm < po)
-   ((hint == 2) ? croak : warn)(indirect_msg, SvPV_nolen_const(svm),
-                                              SvPV_nolen_const(svo));
+  if (pm && po && pm < po) {
+   const char *psvm = SvPV_nolen_const(svm), *psvo = SvPV_nolen_const(svo);
+   if (hint == 2)
+    croak(indirect_msg, psvm, psvo);
+   else
+    warn(indirect_msg, psvm, psvo);
+  }
  }
 
 done:
