@@ -29,7 +29,7 @@ STATIC UV indirect_hint(pTHX) {
                                          "indirect", 8,
                                          0,
                                          indirect_hash);
- return SvOK(id) ? SvUV(id) : 0;
+ return SvIOK(id) ? SvUV(id) : 0;
 }
 
 /* ... op -> source position ............................................... */
@@ -58,6 +58,8 @@ STATIC void indirect_map_store(pTHX_ const OP *o, const char *src, SV *sv) {
  val = newSVsv(sv);
  SvUPGRADE(val, SVt_PVIV);
  SvUVX(val) = PTR2UV(src);
+ SvIOK_on(val);
+ SvIsUV_on(val);
  if (!hv_store(indirect_map, buf, sprintf(buf, "%u", PTR2UV(o)), val, 0))
   SvREFCNT_dec(val);
 }
