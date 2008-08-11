@@ -1,5 +1,12 @@
 Revision history for indirect
 
+0.02    2008-08-11 15:55 UTC
+        + Fix : Some building failures with old gcc versions that didn't seem to
+                like the ((hint == 2) ? croak : warn)(msg) construct. I think.
+        + Rem : Unused cruft from a previous implementation.
+        + Tst : Fail more gracefully when we can't capture buffers or when the
+                child returned an error.
+
 0.01    2008-08-10 20:40 UTC
         First version, released on an unsuspecting world.
 

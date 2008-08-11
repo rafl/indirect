@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                indirect
-version:             0.01
+version:             0.02
 abstract:            Lexically warn about using the indirect object syntax.
 license:             perl
 author:              
