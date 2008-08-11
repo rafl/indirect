@@ -175,12 +175,15 @@ STATIC OP *indirect_ck_entersub(pTHX_ OP *o) {
    om = om->op_sibling;
   if (om->op_type == OP_METHOD)
    om = cUNOPx(om)->op_first;
+  else if (om->op_type != OP_METHOD_NAMED)
+   goto done;
   pm = indirect_map_fetch(om, &svm);
   po = indirect_map_fetch(oo, &svo);
   if (pm && po && pm < po)
    ((hint == 2) ? croak : warn)(indirect_msg, SvPV_nolen(svm), SvPV_nolen(svo));
  }
 
+done:
  return CALL_FPTR(indirect_old_ck_entersub)(aTHX_ o);
 }
 
