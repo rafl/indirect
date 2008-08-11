@@ -6,6 +6,14 @@
 #include "perl.h"
 #include "XSUB.h"
 
+#ifndef SvPV_const
+# define SvPV_const SvPV
+#endif
+
+#ifndef SvPV_nolen_const
+# define SvPV_nolen_const SvPV_nolen
+#endif
+
 #ifndef SvPVX_const
 # define SvPVX_const SvPVX
 #endif
@@ -59,7 +67,7 @@ STATIC const char *indirect_map_fetch(pTHX_ const OP *o, SV ** const name) {
  char buf[32];
  SV **val;
 
- if (indirect_linestr != SvPVX(PL_parser->linestr))
+ if (indirect_linestr != SvPVX_const(PL_parser->linestr))
   return NULL;
 
  val = hv_fetch(indirect_map, buf, sprintf(buf, "%u", PTR2UV(o)), 0);
@@ -196,7 +204,8 @@ STATIC OP *indirect_ck_entersub(pTHX_ OP *o) {
   pm = indirect_map_fetch(om, &svm);
   po = indirect_map_fetch(oo, &svo);
   if (pm && po && pm < po)
-   ((hint == 2) ? croak : warn)(indirect_msg, SvPV_nolen(svm), SvPV_nolen(svo));
+   ((hint == 2) ? croak : warn)(indirect_msg, SvPV_nolen_const(svm),
+                                              SvPV_nolen_const(svo));
  }
 
 done:
