@@ -1,3 +1,6 @@
+/* This file is part of the indirect Perl module.
+ * See http://search.cpan.org/dist/indirect/ */
+
 #define PERL_NO_GET_CONTEXT
 #include "EXTERN.h"
 #include "perl.h"
@@ -7,13 +10,9 @@
 # define SvPVX_const SvPVX
 #endif
 
-STATIC U32 indirect_initialized = 0;
+/* ... Hints ............................................................... */
+
 STATIC U32 indirect_hash = 0;
-
-STATIC const char indirect_msg[] = "Indirect call of method \"%s\" on object \"%s\"";
-
-STATIC HV *indirect_map = NULL;
-STATIC const char *indirect_linestr = NULL;
 
 STATIC UV indirect_hint(pTHX) {
 #define indirect_hint() indirect_hint(aTHX)
@@ -24,6 +23,11 @@ STATIC UV indirect_hint(pTHX) {
                                          indirect_hash);
  return SvOK(id) ? SvUV(id) : 0;
 }
+
+/* ... op -> source position ............................................... */
+
+STATIC HV *indirect_map = NULL;
+STATIC const char *indirect_linestr = NULL;
 
 STATIC void indirect_map_store(pTHX_ const OP *o, const char *src, SV *sv) {
 #define indirect_map_store(O, S, N) indirect_map_store(aTHX_ (O), (S), (N))
@@ -87,6 +91,8 @@ STATIC const char *indirect_find(pTHX_ SV *sv, const char *s) {
  return p;
 }
 
+/* ... ck_const ............................................................ */
+
 STATIC OP *(*indirect_old_ck_const)(pTHX_ OP *) = 0;
 
 STATIC OP *indirect_ck_const(pTHX_ OP *o) {
@@ -98,6 +104,8 @@ STATIC OP *indirect_ck_const(pTHX_ OP *o) {
 
  return CALL_FPTR(indirect_old_ck_const)(aTHX_ o);
 }
+
+/* ... ck_rv2sv ............................................................ */
 
 STATIC OP *(*indirect_old_ck_rv2sv)(pTHX_ OP *) = 0;
 
@@ -115,6 +123,8 @@ STATIC OP *indirect_ck_rv2sv(pTHX_ OP *o) {
  return CALL_FPTR(indirect_old_ck_rv2sv)(aTHX_ o);
 }
 
+/* ... ck_padany ........................................................... */
+
 STATIC OP *(*indirect_old_ck_padany)(pTHX_ OP *) = 0;
 
 STATIC OP *indirect_ck_padany(pTHX_ OP *o) {
@@ -131,6 +141,8 @@ STATIC OP *indirect_ck_padany(pTHX_ OP *o) {
 
  return CALL_FPTR(indirect_old_ck_padany)(aTHX_ o);
 }
+
+/* ... ck_method ........................................................... */
 
 STATIC OP *(*indirect_old_ck_method)(pTHX_ OP *) = 0;
 
@@ -155,6 +167,10 @@ STATIC OP *indirect_ck_method(pTHX_ OP *o) {
 done:
  return CALL_FPTR(indirect_old_ck_method)(aTHX_ o);
 }
+
+/* ... ck_entersub ......................................................... */
+
+STATIC const char indirect_msg[] = "Indirect call of method \"%s\" on object \"%s\"";
 
 STATIC OP *(*indirect_old_ck_entersub)(pTHX_ OP *) = 0;
 
@@ -186,6 +202,10 @@ STATIC OP *indirect_ck_entersub(pTHX_ OP *o) {
 done:
  return CALL_FPTR(indirect_old_ck_entersub)(aTHX_ o);
 }
+
+STATIC U32 indirect_initialized = 0;
+
+/* --- XS ------------------------------------------------------------------ */
 
 MODULE = indirect      PACKAGE = indirect
 
