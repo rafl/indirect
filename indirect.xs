@@ -68,52 +68,6 @@ STATIC const char *indirect_map_fetch(pTHX_ const OP *o, SV **name) {
  return INT2PTR(const char *, SvUVX(*val));
 }
 
-STATIC UV indirect_intuit(const char *meth, const char *obj) {
- const char *s;
- int indirect = 0, quotelike = 0;
-
- for (s = meth; s < obj; ++s) {
-  switch (*s) {
-   case ',':
-   case '(':
-   case '=':
-   case '\'':
-   case '"':
-   case '`':
-    return 0;
-   case '-':
-    indirect = 1;
-    break;
-   case '>':
-    if (indirect)
-     return 0;
-    break;
-   case 'q':
-    indirect = 0;
-    if (quotelike == 1)
-     quotelike = 2;
-    break;
-   case 'w':
-   case 'r':
-   case 'x':
-    indirect = 0;
-    if (quotelike != 2)
-     quotelike = 0;
-    break;
-   default:
-    indirect = 0;
-    if (isSPACE(*s))
-     quotelike = 1;
-    else if (quotelike == 2 && !isALNUM(*s))
-     return 0;
-    else
-     quotelike = 0;
-  }
- }
-
- return 1;
-}
-
 STATIC const char *indirect_find(pTHX_ SV *sv, const char *s) {
 #define indirect_find(N, S) indirect_find(aTHX_ (N), (S))
  STRLEN len;
@@ -223,7 +177,7 @@ STATIC OP *indirect_ck_entersub(pTHX_ OP *o) {
    om = cUNOPx(om)->op_first;
   pm = indirect_map_fetch(om, &svm);
   po = indirect_map_fetch(oo, &svo);
-  if (pm && po && pm < po && indirect_intuit(pm, po))
+  if (pm && po && pm < po)
    ((hint == 2) ? croak : warn)(indirect_msg, SvPV_nolen(svm), SvPV_nolen(svo));
  }
 
