@@ -3,12 +3,9 @@
 use strict;
 use warnings;
 
-my $total;
-BEGIN {
- $total = 32;
-}
+my $total = 32;
 
-use Test::More tests => $total + 1;
+use Test::More;
 
 use IPC::Cmd qw/run/;
 
@@ -20,6 +17,10 @@ use IPC::Cmd qw/run/;
           '-c',
           't/data/good.d'
    ];
+
+plan skip_all => "Couldn't capture buffers" if $success and not defined $stderr;
+plan tests => $total + 1;
+
 $stderr = join '', @$stderr;
 unless ($success) {
  diag $stderr;
