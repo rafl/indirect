@@ -22,14 +22,14 @@
 
 STATIC U32 indirect_hash = 0;
 
-STATIC UV indirect_hint(pTHX) {
+STATIC IV indirect_hint(pTHX) {
 #define indirect_hint() indirect_hint(aTHX)
  SV *id = Perl_refcounted_he_fetch(aTHX_ PL_curcop->cop_hints_hash,
                                          NULL,
                                          "indirect", 8,
                                          0,
                                          indirect_hash);
- return SvIOK(id) ? SvUV(id) : 0;
+ return (id && SvOK(id) && SvIOK(id)) ? SvIV(id) : 0;
 }
 
 /* ... op -> source position ............................................... */
@@ -187,7 +187,7 @@ STATIC OP *(*indirect_old_ck_entersub)(pTHX_ OP *) = 0;
 STATIC OP *indirect_ck_entersub(pTHX_ OP *o) {
  LISTOP *op;
  OP *om, *oo;
- UV hint = indirect_hint();
+ IV hint = indirect_hint();
 
  if (hint) {
   const char *pm, *po;
