@@ -50,7 +50,7 @@ STATIC void indirect_map_store(pTHX_ const OP *o, const char *src, SV *sv) {
   SvREFCNT_dec(val);
 }
 
-STATIC const char *indirect_map_fetch(pTHX_ const OP *o, SV **name) {
+STATIC const char *indirect_map_fetch(pTHX_ const OP *o, SV ** const name) {
 #define indirect_map_fetch(O, S) indirect_map_fetch(aTHX_ (O), (S))
  char buf[32];
  SV **val;
