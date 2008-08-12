@@ -1,5 +1,11 @@
 Revision history for indirect
 
+0.03    2008-08-12 15:25 UTC
+        This release is kindly supported by Copenhagen Hotel Centrum WiFi.
+        + Fix : Tests used not to pass PERL5OPTS to their kids. This lead to
+                failures under CPAN. I think.
+        + Tst : Refinements.
+
 0.02    2008-08-11 15:55 UTC
         + Fix : Some building failures with old gcc versions that didn't seem to
                 like the ((hint == 2) ? croak : warn)(msg) construct. I think.
