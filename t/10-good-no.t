@@ -22,7 +22,7 @@ use IPC::Cmd qw/run/;
 plan skip_all => "Couldn't capture buffers" if $success and not defined $stderr;
 plan tests => $total + 1;
 
-$stderr = join '', @$stderr;
+$stderr = join '', @{$stderr || []};
 unless ($success) {
  diag $stderr;
  diag "Failed to execute data file (error $err_code)";

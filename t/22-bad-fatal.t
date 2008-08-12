@@ -20,5 +20,5 @@ use IPC::Cmd qw/run/;
 plan skip_all => "Couldn't capture buffers" if $success and not defined $stderr;
 plan tests => 1;
 
-$stderr = join '', @$stderr;
+$stderr = join '', @{$stderr || []};
 ok(!$success && $err_code && $stderr =~ /^Indirect\s+call\s+of\s+method\s+"new"\s+on\s+object\s+"Hlagh1"/mg, 'croak when :fatal is specified');
