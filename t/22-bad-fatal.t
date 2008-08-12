@@ -11,6 +11,7 @@ use IPC::Cmd qw/run/;
  = run command => [
           $^X,
           map('-I' . $_, @INC),
+          $ENV{PERL5OPT} || '',
           '-M-indirect=:fatal',
           '-c',
           't/data/bad.d'

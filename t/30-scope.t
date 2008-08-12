@@ -13,6 +13,7 @@ use IPC::Cmd qw/run/;
  = run command => [
           $^X,
           map('-I' . $_, @INC),
+          $ENV{PERL5OPT} || '',
           '-c',
           't/data/mixed.d'
    ];
