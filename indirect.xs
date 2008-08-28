@@ -192,13 +192,15 @@ STATIC OP *indirect_ck_entersub(pTHX_ OP *o) {
  if (hint) {
   const char *pm, *po;
   SV *svm, *svo;
-  op = (LISTOP *) o;
-  while (op->op_type != OP_PUSHMARK)
-   op = (LISTOP *) op->op_first;
-  oo = op->op_sibling;
-  om = oo;
-  while (om->op_sibling)
-   om = om->op_sibling;
+  oo = o;
+  do {
+   op = (LISTOP *) oo;
+   if (!op->op_flags & OPf_KIDS)
+    goto done;
+   oo = op->op_first;
+  } while (oo->op_type != OP_PUSHMARK);
+  oo = oo->op_sibling;
+  om = op->op_last;
   if (om->op_type == OP_METHOD)
    om = cUNOPx(om)->op_first;
   else if (om->op_type != OP_METHOD_NAMED)
