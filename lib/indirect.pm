@@ -83,6 +83,8 @@ You can find documentation for this module with the perldoc command.
 
     perldoc indirect
 
+Tests code coverage report is available at L<http://www.profvince.com/perl/cover/indirect>.
+
 =head1 ACKNOWLEDGEMENTS
 
 Bram, for motivation and advices.
