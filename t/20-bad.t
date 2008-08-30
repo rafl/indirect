@@ -3,9 +3,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 28 * 2;
+use Test::More tests => 30 * 2;
 
-my ($obj, $pkg, $cb, $x);
+my ($obj, $x);
 
 {
  local $/ = "####\n";
@@ -95,3 +95,7 @@ $obj = HlaghHlagh Hlagh; # HlaghHlagh Hlagh
 $obj = new newnew;
 ####
 $obj = new newnew; # new newnew
+####
+new Hlagh (meh $x)
+####
+Hlagh->new(meh $x)

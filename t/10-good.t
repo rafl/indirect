@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 32 * 2;
+use Test::More tests => 33 * 2;
 
 my ($obj, $pkg, $cb, $x);
 sub meh;
@@ -120,3 +120,5 @@ meh $x, 1 , 2;
 print STDOUT "bananananananana\n";
 ####
 print $x "oh hai\n";
+####
+$x->foo($pkg->$cb)
