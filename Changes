@@ -1,5 +1,9 @@
 Revision history for indirect
 
+0.04    2008-08-30 19:00 UTC
+        + Fix : Clean up the op->src hash when we're done with an entersub.
+        + Tst : No longer fork for testing. IPC::Cmd isn't required anymore.
+
 0.03    2008-08-12 15:25 UTC
         This release is kindly supported by Copenhagen Hotel Centrum WiFi.
         + Fix : Tests used not to pass PERL5OPTS to their kids. This lead to

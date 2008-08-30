@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                indirect
-version:             0.03
+version:             0.04
 abstract:            Lexically warn about using the indirect object syntax.
 license:             perl
 author:              
@@ -14,5 +14,4 @@ meta-spec:
     version: 1.3
 build_requires:
     ExtUtils::MakeMaker:           0
-    IPC::Cmd:                      0
     Test::More:                    0

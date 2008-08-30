@@ -2,7 +2,7 @@ NAME
     indirect - Lexically warn about using the indirect object syntax.
 
 VERSION
-    Version 0.03
+    Version 0.04
 
 SYNOPSIS
         no indirect;
@@ -41,8 +41,6 @@ DEPENDENCIES
 
     XSLoader (standard since perl 5.006).
 
-    Tests require IPC::Cmd (standard since 5.9.5).
-
 AUTHOR
     Vincent Pit, "<perl at profvince.com>", <http://www.profvince.com>.
 
@@ -60,6 +58,9 @@ SUPPORT
     You can find documentation for this module with the perldoc command.
 
         perldoc indirect
+
+    Tests code coverage report is available at
+    <http://www.profvince.com/perl/cover/indirect>.
 
 ACKNOWLEDGEMENTS
     Bram, for motivation and advices.
