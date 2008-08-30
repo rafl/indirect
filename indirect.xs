@@ -129,13 +129,15 @@ STATIC const char *indirect_find(pTHX_ SV *sv, const char *s) {
 STATIC OP *(*indirect_old_ck_const)(pTHX_ OP *) = 0;
 
 STATIC OP *indirect_ck_const(pTHX_ OP *o) {
+ o = CALL_FPTR(indirect_old_ck_const)(aTHX_ o);
+
  if (indirect_hint()) {
   SV *sv = cSVOPo_sv;
   if (SvPOK(sv) && (SvTYPE(sv) >= SVt_PV))
    indirect_map_store(o, indirect_find(sv, PL_parser->oldbufptr), sv);
  }
 
- return CALL_FPTR(indirect_old_ck_const)(aTHX_ o);
+ return o;
 }
 
 /* ... ck_rv2sv ............................................................ */
@@ -161,6 +163,8 @@ STATIC OP *indirect_ck_rv2sv(pTHX_ OP *o) {
 STATIC OP *(*indirect_old_ck_padany)(pTHX_ OP *) = 0;
 
 STATIC OP *indirect_ck_padany(pTHX_ OP *o) {
+ o = CALL_FPTR(indirect_old_ck_padany)(aTHX_ o);
+
  if (indirect_hint()) {
   SV *sv;
   const char *s = PL_parser->oldbufptr, *t = PL_parser->bufptr - 1;
@@ -172,7 +176,7 @@ STATIC OP *indirect_ck_padany(pTHX_ OP *o) {
   indirect_map_store(o, s, sv);
  }
 
- return CALL_FPTR(indirect_old_ck_padany)(aTHX_ o);
+ return o;
 }
 
 /* ... ck_method ........................................................... */
@@ -212,6 +216,8 @@ STATIC OP *indirect_ck_entersub(pTHX_ OP *o) {
  OP *om, *oo;
  IV hint = indirect_hint();
 
+ o = CALL_FPTR(indirect_old_ck_entersub)(aTHX_ o);
+
  if (hint) {
   const char *pm, *po;
   SV *svm, *svo;
@@ -241,7 +247,7 @@ done:
   indirect_map_clean(o);
  }
 
- return CALL_FPTR(indirect_old_ck_entersub)(aTHX_ o);
+ return o;
 }
 
 STATIC U32 indirect_initialized = 0;
