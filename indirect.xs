@@ -37,6 +37,8 @@ STATIC IV indirect_hint(pTHX) {
 STATIC HV *indirect_map = NULL;
 STATIC const char *indirect_linestr = NULL;
 
+#define OP2STR(O) (sprintf(buf, "%u", PTR2UV(o)))
+
 STATIC void indirect_map_store(pTHX_ const OP *o, const char *src, SV *sv) {
 #define indirect_map_store(O, S, N) indirect_map_store(aTHX_ (O), (S), (N))
  char buf[32];
@@ -60,7 +62,7 @@ STATIC void indirect_map_store(pTHX_ const OP *o, const char *src, SV *sv) {
  SvUVX(val) = PTR2UV(src);
  SvIOK_on(val);
  SvIsUV_on(val);
- if (!hv_store(indirect_map, buf, sprintf(buf, "%u", PTR2UV(o)), val, 0))
+ if (!hv_store(indirect_map, buf, OP2STR(o), val, 0))
   SvREFCNT_dec(val);
 }
 
@@ -72,7 +74,7 @@ STATIC const char *indirect_map_fetch(pTHX_ const OP *o, SV ** const name) {
  if (indirect_linestr != SvPVX_const(PL_parser->linestr))
   return NULL;
 
- val = hv_fetch(indirect_map, buf, sprintf(buf, "%u", PTR2UV(o)), 0);
+ val = hv_fetch(indirect_map, buf, OP2STR(o), 0);
  if (!val) {
   *name = NULL;
   return NULL;
@@ -80,6 +82,27 @@ STATIC const char *indirect_map_fetch(pTHX_ const OP *o, SV ** const name) {
 
  *name = *val;
  return INT2PTR(const char *, SvUVX(*val));
+}
+
+STATIC void indirect_map_delete(pTHX_ const OP *o) {
+#define indirect_map_delete(O) indirect_map_delete(aTHX_ (O))
+ char buf[32];
+ SV *val;
+
+ hv_delete(indirect_map, buf, OP2STR(o), G_DISCARD);
+}
+
+STATIC void indirect_map_clean(pTHX_ const OP *o) {
+#define indirect_map_clean(O) indirect_map_clean(aTHX_ (O))
+ if (o->op_flags & OPf_KIDS) {
+  const OP *kid = cUNOPo->op_first;
+  for (; kid; kid = kid->op_sibling) {
+   indirect_map_delete(kid);
+   indirect_map_clean(kid);
+  }
+ } else {
+  indirect_map_delete(o);
+ }
 }
 
 STATIC const char *indirect_find(pTHX_ SV *sv, const char *s) {
@@ -214,9 +237,10 @@ STATIC OP *indirect_ck_entersub(pTHX_ OP *o) {
    else
     warn(indirect_msg, psvm, psvo);
   }
+done:
+  indirect_map_clean(o);
  }
 
-done:
  return CALL_FPTR(indirect_old_ck_entersub)(aTHX_ o);
 }
 
