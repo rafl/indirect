@@ -67,8 +67,6 @@ L<perl> 5.9.4.
 
 L<XSLoader> (standard since perl 5.006).
 
-Tests require L<IPC::Cmd> (standard since 5.9.5).
-
 =head1 AUTHOR
 
 Vincent Pit, C<< <perl at profvince.com> >>, L<http://www.profvince.com>.

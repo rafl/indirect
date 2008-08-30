@@ -1,58 +1,63 @@
-#!perl
+#!perl -T
 
 use strict;
 use warnings;
 
-my $total = 8;
+my $tests;
+BEGIN { $tests = 8 }
 
-use Test::More;
+use Test::More tests => $tests + 1;
 
-use IPC::Cmd qw/run/;
+my %wrong = map { $_ => 1 } 2, 3, 5, 7;
 
-(my $success, my $err_code, undef, undef, my $stderr)
- = run command => [
-          $^X,
-          map('-I' . $_, @INC),
-          $ENV{PERL5OPT} || '',
-          '-c',
-          't/data/mixed.d'
-   ];
-
-plan skip_all => "Couldn't capture buffers" if $success and not defined $stderr;
-plan tests => $total + 1;
-
-$stderr = join '', @{$stderr || []};
-unless ($success) {
- diag $stderr;
- diag "Failed to execute data file (error $err_code)";
- fail "Couldn't run test $_" for 1 .. $total + 1;
- exit $total + 1;
-}
-
-my %fail = map { $_ => 1 } 2, 3, 5, 7;
-my %failed;
-my $extra_fail = 0;
-
-while ($stderr =~ /^Indirect\s+call\s+of\s+method\s+"([^"]+)"\s+on\s+object\s+"([^"]+)"/mg) {
- my ($m, $o) = ($1, $2);
- my $id;
- if ($o =~ /^P(\d+)$/) {
-  $id = $1;
- } else {
-  diag "$m $o";
-  ++$extra_fail;
+{
+ my $code = do { local $/; <DATA> };
+ my @warns;
+ {
+  local $SIG{__WARN__} = sub { push @warns, join '', 'warn:', @_ };
+  eval "die qq{ok\\n}; $code";
  }
- if ($id) {
-  if (exists $fail{$id}) {
-   pass("test $id failed as expected");
-   delete $fail{$id};
-   $failed{$id} = 1;
+ my $left = 0;
+ my %res = map {
+  if (/"P(\d+)"/) {
+   $1 => $_
   } else {
-   fail("test $id shouldn't have failed");
+   ++$left; ()
+  }
+ } @warns;
+ for (1 .. $tests) {
+  my $w = $res{$_};
+  if ($wrong{$_}) {
+   like($w, qr/^warn:Indirect\s+call\s+of\s+method\s+"new"\s+on\s+object\s+"P$_"/, "$_ should warn");
+  } else {
+   is($w, undef, "$_ shouldn't warn");
   }
  }
+ is($left, 0, 'nothing left');
 }
 
-pass("test $_ hasn't failed") for grep { !$failed{$_} } 1 .. $total;
-fail("test $_ should have failed") for sort { $a <=> $b } keys %fail;
-is($extra_fail, 0, 'no extra fails');
+__DATA__
+my $a = new P1;
+
+{
+ no indirect;
+ my $b = new P2;
+ {
+  my $c = new P3;
+ }
+ {
+  use indirect;
+  my $d = new P4;
+ }
+ my $e = new P5;
+}
+
+my $f = new P6;
+
+no indirect;
+
+my $g = new P7;
+
+use indirect;
+
+my $h = new P8;

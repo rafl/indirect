@@ -6,7 +6,6 @@ use ExtUtils::MakeMaker;
     
 my $BUILD_REQUIRES = {
  'ExtUtils::MakeMaker' => 0,
- 'IPC::Cmd'            => 0,
  'Test::More'          => 0,
 };  
     
