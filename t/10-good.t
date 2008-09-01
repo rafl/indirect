@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 33 * 2;
+use Test::More tests => 36 * 2;
 
 my ($obj, $pkg, $cb, $x);
 sub meh;
@@ -122,3 +122,9 @@ print STDOUT "bananananananana\n";
 print $x "oh hai\n";
 ####
 $x->foo($pkg->$cb)
+####
+$obj = "apple ${\(new Hlagh)} pear"
+####
+$obj = "apple @{[new Hlagh]} pear"
+####
+s/dongs/new Hlagh/e;
