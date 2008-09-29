@@ -35,6 +35,8 @@ When enabled (or disabled as some may prefer, since you actually turn it on by c
 
 It currently does not warn when the object is enclosed between braces (like C<meth { $obj } @args>) or for core functions (C<print> or C<say>). This may change in the future, or may be added as optional features that would be enabled by passing options to C<unimport>.
 
+This module is B<not> a source filter.
+
 =head1 METHODS
 
 =head2 C<unimport @opts>
