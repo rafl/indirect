@@ -31,7 +31,7 @@ BEGIN {
 
 =head1 DESCRIPTION
 
-When enabled (or disabled as some may prefer, since you actually turn it on by calling C<no indirect>), this pragma warns about indirect object syntax constructs that may have slipped into your code. This syntax is now considered harmful, since its parsing has many quirks and its use is error prone (when C<sub> isn't defined, C<sub $x> is actually interpreted as C<< $x->sub >>).
+When enabled (or disabled as some may prefer to say, since you actually turn it on by calling C<no indirect>), this pragma warns about indirect object syntax constructs that may have slipped into your code. This syntax is now considered harmful, since its parsing has many quirks and its use is error prone (when C<sub> isn't defined, C<sub $x> is actually interpreted as C<< $x->sub >>).
 
 It currently does not warn when the object is enclosed between braces (like C<meth { $obj } @args>) or for core functions (C<print> or C<say>). This may change in the future, or may be added as optional features that would be enabled by passing options to C<unimport>.
 
