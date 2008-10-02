@@ -2,7 +2,7 @@ NAME
     indirect - Lexically warn about using the indirect object syntax.
 
 VERSION
-    Version 0.04
+    Version 0.05
 
 SYNOPSIS
         no indirect;
@@ -26,6 +26,8 @@ DESCRIPTION
     (like "meth { $obj } @args") or for core functions ("print" or "say").
     This may change in the future, or may be added as optional features that
     would be enabled by passing options to "unimport".
+
+    This module is not a source filter.
 
 METHODS
   "unimport @opts"

@@ -1,5 +1,10 @@
 Revision history for indirect
 
+0.05    2008-10-02 14:40 UTC
+        + Chg : Now the old check function is always called before storing an op
+                into the map.
+        + Fix : Misc code and docs refinements.
+
 0.04    2008-08-30 19:00 UTC
         + Fix : Clean up the op->src hash when we're done with an entersub.
         + Tst : No longer fork for testing. IPC::Cmd isn't required anymore.
