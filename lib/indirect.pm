@@ -41,7 +41,7 @@ This module is B<not> a source filter.
 
 =head2 C<unimport @opts>
 
-Magically called when C<no indirect @args> is encountered. Turns the module on. If C<@opts> contains C<':fatal'>, the module will croak on the first indirect syntax met.
+Magically called when C<no indirect @opts> is encountered. Turns the module on. If C<@opts> contains C<':fatal'>, the module will croak on the first indirect syntax met.
 
 =head2 C<import>
 
