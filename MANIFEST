@@ -9,6 +9,7 @@ t/00-load.t
 t/10-good.t
 t/20-bad.t
 t/21-bad-fatal.t
+t/22-bad-mixed.t
 t/30-scope.t
 t/90-boilerplate.t
 t/91-pod.t
