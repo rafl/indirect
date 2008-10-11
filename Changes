@@ -1,5 +1,10 @@
 Revision history for indirect
 
+0.06    2008-10-11 16:45 UTC
+        + Doc : Nits.
+        + Tst : Test "no indirect 'anything'", "foo Class->bar", and indirect
+                uses of exec() and system().
+
 0.05    2008-10-02 14:40 UTC
         + Chg : Now the old check function is always called before storing an op
                 into the map.

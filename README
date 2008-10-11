@@ -2,7 +2,7 @@ NAME
     indirect - Lexically warn about using the indirect object syntax.
 
 VERSION
-    Version 0.05
+    Version 0.06
 
 SYNOPSIS
         no indirect;
@@ -15,12 +15,12 @@ SYNOPSIS
         if (defied $foo) { ... } # croaks, note the typo
 
 DESCRIPTION
-    When enabled (or disabled as some may prefer, since you actually turn it
-    on by calling "no indirect"), this pragma warns about indirect object
-    syntax constructs that may have slipped into your code. This syntax is
-    now considered harmful, since its parsing has many quirks and its use is
-    error prone (when "sub" isn't defined, "sub $x" is actually interpreted
-    as "$x->sub").
+    When enabled (or disabled as some may prefer to say, since you actually
+    turn it on by calling "no indirect"), this pragma warns about indirect
+    object syntax constructs that may have slipped into your code. This
+    syntax is now considered harmful, since its parsing has many quirks and
+    its use is error prone (when "sub" isn't defined, "sub $x" is actually
+    interpreted as "$x->sub").
 
     It currently does not warn when the object is enclosed between braces
     (like "meth { $obj } @args") or for core functions ("print" or "say").
@@ -31,7 +31,7 @@ DESCRIPTION
 
 METHODS
   "unimport @opts"
-    Magically called when "no indirect @args" is encountered. Turns the
+    Magically called when "no indirect @opts" is encountered. Turns the
     module on. If @opts contains ':fatal', the module will croak on the
     first indirect syntax met.
 
@@ -46,8 +46,7 @@ DEPENDENCIES
 AUTHOR
     Vincent Pit, "<perl at profvince.com>", <http://www.profvince.com>.
 
-    You can contact me by mail or on #perl @ FreeNode (vincent or
-    Prof_Vince).
+    You can contact me by mail or on "irc.perl.org" (vincent).
 
 BUGS
     Please report any bugs or feature requests to "bug-indirect at
