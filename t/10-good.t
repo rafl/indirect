@@ -9,9 +9,9 @@ package main;
 use strict;
 use warnings;
 
-use Test::More tests => 36 * 4;
+use Test::More tests => 40 * 4;
 
-my ($obj, $pkg, $cb, $x);
+my ($obj, $pkg, $cb, $x, @a);
 sub meh;
 
 {
@@ -144,3 +144,11 @@ $obj = "apple ${\(new Hlagh)} pear"
 $obj = "apple @{[new Hlagh]} pear"
 ####
 s/dongs/new Hlagh/e;
+####
+exec $x $x, @a;
+####
+exec { $a[0] } @a;
+####
+system $x $x, @a;
+####
+system { $a[0] } @a;
