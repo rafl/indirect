@@ -34,5 +34,5 @@ WriteMakefile(
                       . build_req,
         COMPRESS   => 'gzip -9f', SUFFIX => 'gz'
     },
-    clean         => { FILES => 'indirect-* *.gcov *.gcda *.gcno cover_db' },
+    clean         => { FILES => 'indirect-* *.gcov *.gcda *.gcno cover_db Debian_CPANTS.txt' },
 );
