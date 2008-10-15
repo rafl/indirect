@@ -146,10 +146,26 @@ STATIC OP *(*indirect_old_ck_rv2sv)(pTHX_ OP *) = 0;
 STATIC OP *indirect_ck_rv2sv(pTHX_ OP *o) {
  if (indirect_hint()) {
   OP *op = cUNOPo->op_first;
-  SV *name = cSVOPx_sv(op);
-  if (SvPOK(name) && (SvTYPE(name) >= SVt_PV)) {
+  const char *name = NULL;
+  STRLEN len;
+  switch (op->op_type) {
+   case OP_GV:
+   case OP_GVSV: {
+    GV *gv = cGVOPx_gv(op);
+    name = GvNAME(gv);
+    len  = GvNAMELEN(gv);
+    break;
+   }
+   default: {
+    SV *sv = cSVOPx_sv(op);
+    if (SvPOK(sv) && (SvTYPE(sv) >= SVt_PV))
+     name = SvPV_const(sv, len);
+    break;
+   }
+  }
+  if (name) {
    SV *sv = sv_2mortal(newSVpvn("$", 1));
-   sv_catsv(sv, name);
+   sv_catpvn(sv, name, len);
    o = CALL_FPTR(indirect_old_ck_rv2sv)(aTHX_ o);
    indirect_map_store(o, indirect_find(sv, PL_parser->oldbufptr), sv);
    return o;
