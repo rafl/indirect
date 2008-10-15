@@ -9,7 +9,7 @@ package main;
 use strict;
 use warnings;
 
-use Test::More tests => 33 * 4 + 2;
+use Test::More tests => 36 * 4 + 2;
 
 my ($obj, $x);
 
@@ -110,7 +110,13 @@ $obj = new $_      qr/foo/  ;
 ####
 $obj = new $_     qq(bar baz);
 ####
+meh $_;
+####
+meh $_ 1, 2;
+####
 meh $x;
+####
+meh $x 1, 2;
 ####
 meh $x, 1, 2;
 ####

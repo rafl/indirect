@@ -9,7 +9,7 @@ package main;
 use strict;
 use warnings;
 
-use Test::More tests => 41 * 4;
+use Test::More tests => 45 * 4;
 
 my ($obj, $pkg, $cb, $x, @a);
 sub meh;
@@ -129,11 +129,19 @@ $obj = new
       $x
     }(qw/bar baz/);
 ####
+meh;
+####
+meh $_;
+####
 meh $x;
 ####
-meh $x, 1 , 2;
+meh $x, 1, 2;
 ####
 print;
+####
+print $_;
+####
+print $x;
 ####
 print STDOUT "bananananananana\n";
 ####
