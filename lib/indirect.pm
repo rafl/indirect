@@ -9,13 +9,13 @@ indirect - Lexically warn about using the indirect object syntax.
 
 =head1 VERSION
 
-Version 0.07_01
+Version 0.07_02
 
 =cut
 
 our $VERSION;
 BEGIN {
- $VERSION = '0.07_01';
+ $VERSION = '0.07_02';
 }
 
 =head1 SYNOPSIS
