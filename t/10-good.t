@@ -9,9 +9,10 @@ package main;
 use strict;
 use warnings;
 
-use Test::More tests => 45 * 4;
+use Test::More tests => 49 * 4;
 
 my ($obj, $pkg, $cb, $x, @a);
+our $y;
 sub meh;
 
 {
@@ -137,15 +138,23 @@ meh $x;
 ####
 meh $x, 1, 2;
 ####
+meh $y;
+####
+meh $y, 1, 2;
+####
 print;
 ####
 print $_;
 ####
 print $x;
 ####
-print STDOUT "bananananananana\n";
-####
 print $x "oh hai\n";
+####
+print $y;
+####
+print $y "dongs\n";
+####
+print STDOUT "bananananananana\n";
 ####
 $x->foo($pkg->$cb)
 ####
