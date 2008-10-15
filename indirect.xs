@@ -113,9 +113,6 @@ STATIC const char *indirect_find(pTHX_ SV *sv, const char *s) {
  STRLEN len;
  const char *p = NULL, *r = SvPV_const(sv, len);
 
- if (!len)
-  return s;
-
  p = strstr(s, r);
  while (p) {
   p += len;
