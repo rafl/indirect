@@ -66,8 +66,7 @@ STATIC void indirect_map_store(pTHX_ const OP *o, const char *src, SV *sv) {
  SvUVX(val) = PTR2UV(src);
  SvIOK_on(val);
  SvIsUV_on(val);
- if (!hv_store(indirect_map, buf, OP2STR(o), val, 0))
-  SvREFCNT_dec(val);
+ if (!hv_store(indirect_map, buf, OP2STR(o), val, 0)) SvREFCNT_dec(val);
 }
 
 STATIC const char *indirect_map_fetch(pTHX_ const OP *o, SV ** const name) {
