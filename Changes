@@ -1,5 +1,10 @@
 Revision history for indirect
 
+0.07_01 2008-10-15 16:00 UTC
+        + Fix : [RT #40055] : Not handling RV2SV => GV(SV) correctly, which
+                could cause 'no indirect; print' segfaults. Thanks Goro Fuji for
+                reporting.
+
 0.06    2008-10-11 16:45 UTC
         + Doc : Nits.
         + Tst : Test "no indirect 'anything'", "foo Class->bar", and indirect
