@@ -9,9 +9,10 @@ package main;
 use strict;
 use warnings;
 
-use Test::More tests => 36 * 4 + 2;
+use Test::More tests => 44 * 4 + 2;
 
 my ($obj, $x);
+our ($y, $bloop);
 
 {
  local $/ = "####\n";
@@ -27,7 +28,7 @@ my ($obj, $x);
    no indirect;
    eval "die qq{the code compiled but it shouldn't have\n}; $_";
   }
-  like($@, qr/^warn:Indirect\s+call\s+of\s+method\s+"(?:new|meh|HlaghHlagh)"\s+on\s+object\s+"(?:Hlagh|newnew|\$x|\$_)"/, "no indirect: $_");
+  like($@, qr/^warn:Indirect\s+call\s+of\s+method\s+"(?:new|meh|HlaghHlagh)"\s+on\s+object\s+"(?:Hlagh|newnew|\$[xy_]|\$(?:sploosh::)?sploosh|\$(?:main::)?bloop)"/, "no indirect: $_");
   s/Hlagh/Dongs/g;
   {
    use indirect;
@@ -38,7 +39,7 @@ my ($obj, $x);
    no indirect;
    eval "die qq{the code compiled but it shouldn't have\n}; $_";
   }
-  like($@, qr/^warn:Indirect\s+call\s+of\s+method\s+"(?:new|meh|DongsDongs)"\s+on\s+object\s+"(?:Dongs|newnew|\$x|\$_)"/, "no indirect, defined: $_");
+  like($@, qr/^warn:Indirect\s+call\s+of\s+method\s+"(?:new|meh|DongsDongs)"\s+on\s+object\s+"(?:Dongs|newnew|\$[xy_]|\$(?:sploosh::)?sploosh|\$(?:main::)?bloop)"/, "no indirect, defined: $_");
  }
 }
 
@@ -119,6 +120,31 @@ meh $x;
 meh $x 1, 2;
 ####
 meh $x, 1, 2;
+####
+meh $y;
+####
+meh $y 1, 2;
+####
+meh $y, 1, 2;
+####
+package sploosh;
+our $sploosh;
+meh $sploosh::sploosh;
+####
+package sploosh;
+our $sploosh;
+meh $sploosh;
+####
+package sploosh;
+meh $main::bloop;
+####
+package sploosh;
+meh $bloop;
+####
+package sploosh;
+our $sploosh;
+package main;
+meh $sploosh::sploosh;
 ####
 new Hlagh->wut;
 ####

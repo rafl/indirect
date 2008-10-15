@@ -18,6 +18,10 @@
 # define SvPVX_const SvPVX
 #endif
 
+#ifndef sv_catpvn_nomg
+# define sv_catpvn_nomg sv_catpvn
+#endif
+
 /* ... Hints ............................................................... */
 
 STATIC U32 indirect_hash = 0;
@@ -165,13 +169,35 @@ STATIC OP *indirect_ck_rv2sv(pTHX_ OP *o) {
   }
   if (name) {
    SV *sv = sv_2mortal(newSVpvn("$", 1));
-   sv_catpvn(sv, name, len);
+   sv_catpvn_nomg(sv, name, len);
+   const char *s;
+   s = indirect_find(sv, PL_parser->oldbufptr);
+   if (!s) { /* If it failed, retry without the current stash */
+    const char *stash = HvNAME_get(PL_curstash);
+    STRLEN stashlen = HvNAMELEN_get(PL_curstash);
+    if ((len < stashlen + 2) || name != strstr(name, stash)) {
+     /* Failed again ? Try to remove main */
+     stash = "main";
+     stashlen = 4;
+     if ((len < stashlen + 2) || name != strstr(name, stash))
+      goto done;
+    }
+    sv_setpvn(sv, "$", 1);
+    if (name[stashlen] != ':' || name[stashlen+1] != ':')
+     goto done;
+    stashlen += 2;
+    sv_catpvn_nomg(sv, name + stashlen, len - stashlen);
+    s = indirect_find(sv, PL_parser->oldbufptr);
+    if (!s)
+     goto done;
+   }
    o = CALL_FPTR(indirect_old_ck_rv2sv)(aTHX_ o);
-   indirect_map_store(o, indirect_find(sv, PL_parser->oldbufptr), sv);
+   indirect_map_store(o, s, sv);
    return o;
   }
  }
 
+done:
  return CALL_FPTR(indirect_old_ck_rv2sv)(aTHX_ o);
 }
 
