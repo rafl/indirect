@@ -225,8 +225,6 @@ STATIC OP *indirect_ck_padany(pTHX_ OP *o) {
   if (*s == '$' && ++s <= t) {
    while (s < t && isSPACE(*s)) ++s;
    while (s < t && isSPACE(*t)) --t;
-   if (!isALPHA(*s))
-    return o;
    sv = sv_2mortal(newSVpvn("$", 1));
    sv_catpvn_nomg(sv, s, t - s + 1);
    indirect_map_store(o, s, sv);
