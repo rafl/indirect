@@ -112,6 +112,14 @@ STATIC const char *indirect_find(pTHX_ SV *sv, const char *s) {
  STRLEN len;
  const char *p = NULL, *r = SvPV_const(sv, len);
 
+ if (len >= 1 && *r == '$') {
+  ++r;
+  --len;
+  s = strchr(s, '$');
+  if (!s)
+   return NULL;
+ }
+
  p = strstr(s, r);
  while (p) {
   p += len;
@@ -214,10 +222,15 @@ STATIC OP *indirect_ck_padany(pTHX_ OP *o) {
   const char *s = PL_parser->oldbufptr, *t = PL_parser->bufptr - 1;
 
   while (s < t && isSPACE(*s)) ++s;
-  while (t > s && isSPACE(*t)) --t;
-  sv = sv_2mortal(newSVpvn(s, t - s + 1));
-
-  indirect_map_store(o, s, sv);
+  if (*s == '$' && ++s <= t) {
+   while (s < t && isSPACE(*s)) ++s;
+   while (s < t && isSPACE(*t)) --t;
+   if (!isALPHA(*s))
+    return o;
+   sv = sv_2mortal(newSVpvn("$", 1));
+   sv_catpvn_nomg(sv, s, t - s + 1);
+   indirect_map_store(o, s, sv);
+  }
  }
 
  return o;

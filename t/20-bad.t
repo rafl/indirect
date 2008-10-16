@@ -9,14 +9,14 @@ package main;
 use strict;
 use warnings;
 
-use Test::More tests => 44 * 4 + 2;
+use Test::More tests => 44 * 6 + 2;
 
 my ($obj, $x);
 our ($y, $bloop);
 
 sub expect {
  my ($pkg) = @_;
- return  qr/^warn:Indirect call of method "(?:new|meh|$pkg$pkg)" on object "(?:$pkg|newnew|\$(?:[xy_]|(?:sploosh::)?sploosh|(?:main::)?bloop))"/
+ return qr/^warn:Indirect call of method "(?:new|meh|$pkg$pkg)" on object "(?:$pkg|newnew|\$(?:[xy_]|(?:sploosh::)?sploosh|(?:main::)?bloop))"/
 }
 
 {
@@ -45,6 +45,18 @@ sub expect {
    eval "die qq{the code compiled but it shouldn't have\n}; $_";
   }
   like($@, expect('Dongs'), "no indirect, defined: $_");
+  s/\$/\$ \n\t /g;
+  s/Dongs/Hlagh/g;
+  {
+   use indirect;
+   eval "die qq{ok\\n}; $_";
+  }
+  is($@, "ok\n", "use indirect, spaces: $_");
+  {
+   no indirect;
+   eval "die qq{the code compiled but it shouldn't have\n}; $_";
+  }
+  like($@, expect('Hlagh'), "no indirect, spaces: $_");
  }
 }
 
