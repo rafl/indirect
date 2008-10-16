@@ -17,6 +17,7 @@ sub meh;
  local $/ = "####\n";
  while (<DATA>) {
   chomp;
+  s/\s*$//;
   local $SIG{__WARN__} = sub { die 'warn:' . join(' ', @_) };
   {
    use indirect;
