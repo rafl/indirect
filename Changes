@@ -1,5 +1,9 @@
 Revision history for indirect
 
+0.07_03 2008-10-17 20:10 UTC
+        + Add : Support and tests for variables with spaces after the sigil.
+        + Upd : META.yml spec updated to 1.4.
+
 0.07_02 2008-10-15 21:10 UTC
         + Add : Support and tests for package variables.
         + Tst : Coverage improved by removing dead code.
