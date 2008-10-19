@@ -9,14 +9,14 @@ package main;
 use strict;
 use warnings;
 
-use Test::More tests => 44 * 6 + 2;
+use Test::More tests => 46 * 6 + 2;
 
 my ($obj, $x);
 our ($y, $bloop);
 
 sub expect {
  my ($pkg) = @_;
- return qr/^warn:Indirect call of method "(?:new|meh|$pkg$pkg)" on object "(?:$pkg|newnew|\$(?:[xy_]|(?:sploosh::)?sploosh|(?:main::)?bloop))"/
+ return qr/^warn:Indirect call of method "(?:new|meh|$pkg$pkg)" on object "(?:$pkg|newnew|\$(?:[xy_\$]|(?:sploosh::)?sploosh|(?:main::)?bloop))"/
 }
 
 {
@@ -132,6 +132,10 @@ $obj = new $_     qq(bar baz);
 meh $_;
 ####
 meh $_ 1, 2;
+####
+meh $$;
+####
+meh $$ 1, 2;
 ####
 meh $x;
 ####
