@@ -183,11 +183,11 @@ STATIC OP *indirect_ck_rv2sv(pTHX_ OP *o) {
    const char *stash = HvNAME_get(PL_curstash);
    STRLEN stashlen = HvNAMELEN_get(PL_curstash);
 
-   if ((len < stashlen + 2) || name != strstr(name, stash)) {
+   if ((len < stashlen + 2) || strnNE(name, stash, stashlen)) {
     /* Failed again ? Try to remove main */
     stash = "main";
     stashlen = 4;
-    if ((len < stashlen + 2) || name != strstr(name, stash))
+    if ((len < stashlen + 2) || strnNE(name, stash, stashlen))
      goto done;
    }
    if (name[stashlen] != ':' || name[stashlen+1] != ':')
