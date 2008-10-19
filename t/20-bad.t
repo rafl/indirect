@@ -9,7 +9,7 @@ package main;
 use strict;
 use warnings;
 
-use Test::More tests => 46 * 6 + 2;
+use Test::More tests => 47 * 6 + 2;
 
 my ($obj, $x);
 our ($y, $bloop);
@@ -161,6 +161,9 @@ package sploosh;
 meh $main::bloop;
 ####
 package sploosh;
+meh $bloop;
+####
+package ma;
 meh $bloop;
 ####
 package sploosh;
