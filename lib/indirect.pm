@@ -69,6 +69,10 @@ L<perl> 5.9.4.
 
 L<XSLoader> (standard since perl 5.006).
 
+=head1 CAVEATS
+
+C<meth $obj> (no semicolon) at the end of a file won't be seen as an indirect object syntax, although it will as soon as there is another token before the end (as in C<meth $obj;> or C<meth $obj 1>).
+
 =head1 AUTHOR
 
 Vincent Pit, C<< <perl at profvince.com> >>, L<http://www.profvince.com>.
