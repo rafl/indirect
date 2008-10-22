@@ -9,10 +9,13 @@ package main;
 use strict;
 use warnings;
 
-use Test::More tests => 49 * 4;
+use Test::More tests => 53 * 4;
+
+use feature 'state';
 
 my ($obj, $pkg, $cb, $x, @a);
 our $y;
+state $z;
 sub meh;
 
 {
@@ -143,6 +146,10 @@ meh $y;
 ####
 meh $y, 1, 2;
 ####
+meh $z;
+####
+meh $z, 1, 2;
+####
 print;
 ####
 print $_;
@@ -154,6 +161,10 @@ print $x "oh hai\n";
 print $y;
 ####
 print $y "dongs\n";
+####
+print $z;
+####
+print $z "hlagh\n";
 ####
 print STDOUT "bananananananana\n";
 ####
