@@ -2,7 +2,7 @@ NAME
     indirect - Lexically warn about using the indirect object syntax.
 
 VERSION
-    Version 0.07_03
+    Version 0.08
 
 SYNOPSIS
         no indirect;
@@ -42,6 +42,11 @@ DEPENDENCIES
     perl 5.9.4.
 
     XSLoader (standard since perl 5.006).
+
+CAVEATS
+    "meth $obj" (no semicolon) at the end of a file won't be seen as an
+    indirect object syntax, although it will as soon as there is another
+    token before the end (as in "meth $obj;" or "meth $obj 1").
 
 AUTHOR
     Vincent Pit, "<perl at profvince.com>", <http://www.profvince.com>.

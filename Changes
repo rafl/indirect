@@ -1,5 +1,9 @@
 Revision history for indirect
 
+0.08    2008-10-22 14:45 UTC
+        + Fix : A rare edge case for package whose names are prefix of 'main'.
+        + Tst : Test $$ as variable and state variables.
+
 0.07_03 2008-10-17 20:10 UTC
         + Add : Support and tests for variables with spaces after the sigil.
         + Upd : META.yml spec updated to 1.4.

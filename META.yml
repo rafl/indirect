@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               indirect
-version:            0.07_03
+version:            0.08
 abstract:           Lexically warn about using the indirect object syntax.
 author:
     - Vincent Pit <perl@profvince.com>
