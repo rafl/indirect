@@ -6,7 +6,7 @@ use warnings;
 my $tests;
 BEGIN { $tests = 8 }
 
-use Test::More tests => $tests + 1;
+use Test::More tests => $tests + 2;
 
 my %wrong = map { $_ => 1 } 2, 3, 5, 7;
 
@@ -16,6 +16,7 @@ my %wrong = map { $_ => 1 } 2, 3, 5, 7;
  {
   local $SIG{__WARN__} = sub { push @warns, join '', 'warn:', @_ };
   eval "die qq{ok\\n}; $code";
+  is($@, "ok\n", 'DATA compiled fine');
  }
  my $left = 0;
  my %res = map {
