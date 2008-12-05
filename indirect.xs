@@ -22,17 +22,63 @@
 # define sv_catpvn_nomg sv_catpvn
 #endif
 
+#ifndef HvNAME_get
+# define HvNAME_get(H) HvNAME(H)
+#endif
+
+#ifndef HvNAMELEN_get
+# define HvNAMELEN_get(H) strlen(HvNAME_get(H))
+#endif
+
+#define I_HAS_PERL(R, V, S) (PERL_REVISION > (R) || (PERL_REVISION == (R) && (PERL_VERSION > (V) || (PERL_VERSION == (V) && (PERL_SUBVERSION >= (S))))))
+
+#if I_HAS_PERL(5, 10, 0) || defined(PL_parser)
+# ifndef PL_lex_inwhat
+#  define PL_lex_inwhat PL_parser->lex_inwhat
+# endif
+# ifndef PL_linestr
+#  define PL_linestr PL_parser->linestr
+# endif
+# ifndef PL_bufptr
+#  define PL_bufptr PL_parser->bufptr
+# endif
+# ifndef PL_oldbufptr
+#  define PL_oldbufptr PL_parser->oldbufptr
+# endif
+#else
+# ifndef PL_lex_inwhat
+#  define PL_lex_inwhat PL_Ilex_inwhat
+# endif
+# ifndef PL_linestr
+#  define PL_linestr PL_Ilinestr
+# endif
+# ifndef PL_bufptr
+#  define PL_bufptr PL_Ibufptr
+# endif
+# ifndef PL_oldbufptr
+#  define PL_oldbufptr PL_Ioldbufptr
+# endif
+#endif
+
 /* ... Hints ............................................................... */
 
 STATIC U32 indirect_hash = 0;
 
 STATIC IV indirect_hint(pTHX) {
 #define indirect_hint() indirect_hint(aTHX)
- SV *id = Perl_refcounted_he_fetch(aTHX_ PL_curcop->cop_hints_hash,
-                                         NULL,
-                                         "indirect", 8,
-                                         0,
-                                         indirect_hash);
+ SV *id;
+#if I_HAS_PERL(5, 10, 0)
+ id = Perl_refcounted_he_fetch(aTHX_ PL_curcop->cop_hints_hash,
+                                     NULL,
+                                     "indirect", 8,
+                                     0,
+                                     indirect_hash);
+#else
+ SV **val = hv_fetch(GvHV(PL_hintgv), "indirect", 8, indirect_hash);
+ if (!val)
+  return 0;
+ id = *val;
+#endif
  return (id && SvOK(id) && SvIOK(id)) ? SvIV(id) : 0;
 }
 
@@ -53,8 +99,8 @@ STATIC void indirect_map_store(pTHX_ const OP *o, const char *src, SV *sv) {
   * In this case the linestr has temporarly changed, but the old buffer should
   * still be alive somewhere. */
 
- if (!PL_parser->lex_inwhat) {
-  pl_linestr = SvPVX_const(PL_parser->linestr);
+ if (!PL_lex_inwhat) {
+  pl_linestr = SvPVX_const(PL_linestr);
   if (indirect_linestr != pl_linestr) {
    hv_clear(indirect_map);
    indirect_linestr = pl_linestr;
@@ -74,7 +120,7 @@ STATIC const char *indirect_map_fetch(pTHX_ const OP *o, SV ** const name) {
  char buf[32];
  SV **val;
 
- if (indirect_linestr != SvPVX_const(PL_parser->linestr))
+ if (indirect_linestr != SvPVX_const(PL_linestr))
   return NULL;
 
  val = hv_fetch(indirect_map, buf, OP2STR(o), 0);
@@ -141,7 +187,7 @@ STATIC OP *indirect_ck_const(pTHX_ OP *o) {
  if (indirect_hint()) {
   SV *sv = cSVOPo_sv;
   if (SvPOK(sv) && (SvTYPE(sv) >= SVt_PV))
-   indirect_map_store(o, indirect_find(sv, PL_parser->oldbufptr), sv);
+   indirect_map_store(o, indirect_find(sv, PL_oldbufptr), sv);
  }
 
  return o;
@@ -178,7 +224,7 @@ STATIC OP *indirect_ck_rv2sv(pTHX_ OP *o) {
 
   sv = sv_2mortal(newSVpvn("$", 1));
   sv_catpvn_nomg(sv, name, len);
-  s = indirect_find(sv, PL_parser->oldbufptr);
+  s = indirect_find(sv, PL_oldbufptr);
   if (!s) { /* If it failed, retry without the current stash */
    const char *stash = HvNAME_get(PL_curstash);
    STRLEN stashlen = HvNAMELEN_get(PL_curstash);
@@ -196,7 +242,7 @@ STATIC OP *indirect_ck_rv2sv(pTHX_ OP *o) {
    sv_setpvn(sv, "$", 1);
    stashlen += 2;
    sv_catpvn_nomg(sv, name + stashlen, len - stashlen);
-   s = indirect_find(sv, PL_parser->oldbufptr);
+   s = indirect_find(sv, PL_oldbufptr);
    if (!s)
     goto done;
   }
@@ -219,7 +265,7 @@ STATIC OP *indirect_ck_padany(pTHX_ OP *o) {
 
  if (indirect_hint()) {
   SV *sv;
-  const char *s = PL_parser->oldbufptr, *t = PL_parser->bufptr - 1;
+  const char *s = PL_oldbufptr, *t = PL_bufptr - 1;
 
   while (s < t && isSPACE(*s)) ++s;
   if (*s == '$' && ++s <= t) {
@@ -248,7 +294,7 @@ STATIC OP *indirect_ck_method(pTHX_ OP *o) {
    if (!SvPOK(sv) || (SvTYPE(sv) < SVt_PV))
     goto done;
    sv = sv_mortalcopy(sv);
-   s  = indirect_find(sv, PL_parser->oldbufptr);
+   s  = indirect_find(sv, PL_oldbufptr);
   }
   o = CALL_FPTR(indirect_old_ck_method)(aTHX_ o);
   /* o may now be a method_named */

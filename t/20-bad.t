@@ -148,11 +148,11 @@ meh $y;
 meh $y 1, 2;
 ####
 meh $y, 1, 2;
-#### # use feature 'state'; state $z
+#### $] < 5.010 # use feature 'state'; state $z
 meh $z;
-#### # use feature 'state'; state $z
+#### $] < 5.010 # use feature 'state'; state $z
 meh $z 1, 2;
-#### # use feature 'state'; state $z
+#### $] < 5.010 # use feature 'state'; state $z
 meh $z, 1, 2;
 ####
 package sploosh;

@@ -1,5 +1,7 @@
 package indirect;
 
+use 5.008;
+
 use strict;
 use warnings;
 
@@ -60,12 +62,13 @@ sub import {
 
 sub unimport {
  (undef, my $type) = @_;
+ $^H |= 0x00020000;
  $^H{indirect} = (defined $type and $type eq ':fatal') ? 2 : 1;
 }
 
 =head1 DEPENDENCIES
 
-L<perl> 5.9.4.
+L<perl> 5.8.
 
 L<XSLoader> (standard since perl 5.006).
 

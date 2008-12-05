@@ -147,9 +147,9 @@ meh $x, 1, 2;
 meh $y;
 ####
 meh $y, 1, 2;
-#### # use feature 'state'; state $z
+#### $] < 5.010 # use feature 'state'; state $z
 meh $z;
-#### # use feature 'state'; state $z
+#### $] < 5.010 # use feature 'state'; state $z
 meh $z, 1, 2;
 ####
 print;
@@ -163,9 +163,9 @@ print $x "oh hai\n";
 print $y;
 ####
 print $y "dongs\n";
-#### # use feature 'state'; state $z
+#### $] < 5.010 # use feature 'state'; state $z
 print $z;
-#### # use feature 'state'; state $z
+#### $] < 5.010 # use feature 'state'; state $z
 print $z "hlagh\n";
 ####
 print STDOUT "bananananananana\n";
