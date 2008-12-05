@@ -27,48 +27,38 @@ sub expect {
  while (<DATA>) {
   chomp;
   s/\s*$//;
+
   local $SIG{__WARN__} = sub { die 'warn:' . join(' ', @_) };
-  {
-   use indirect;
-   eval "die qq{ok\\n}; $_";
-  }
+
+  eval "die qq{ok\\n}; use indirect; $_";
   is($@, "ok\n", "use indirect: $_");
-  {
-   no indirect;
-   eval "die qq{the code compiled but it shouldn't have\n}; $_";
-  }
+
+  eval "die qq{the code compiled but it shouldn't have\n}; no indirect; $_";
   like($@, expect('Hlagh'), "no indirect: $_");
+
   s/Hlagh/Dongs/g;
-  {
-   use indirect;
-   eval "die qq{ok\\n}; $_";
-  }
+
+  eval "die qq{ok\\n}; use indirect; $_";
   is($@, "ok\n", "use indirect, defined: $_");
-  {
-   no indirect;
-   eval "die qq{the code compiled but it shouldn't have\n}; $_";
-  }
+
+  eval "die qq{the code compiled but it shouldn't have\n}; no indirect; $_";
   like($@, expect('Dongs'), "no indirect, defined: $_");
+
   s/\$/\$ \n\t /g;
   s/Dongs/Hlagh/g;
-  {
-   use indirect;
-   eval "die qq{ok\\n}; $_";
-  }
+
+  eval "die qq{ok\\n}; use indirect; $_";
   is($@, "ok\n", "use indirect, spaces: $_");
-  {
-   no indirect;
-   eval "die qq{the code compiled but it shouldn't have\n}; $_";
-  }
+
+  eval "die qq{the code compiled but it shouldn't have\n}; no indirect; $_";
   like($@, expect('Hlagh'), "no indirect, spaces: $_");
  }
 }
 
 eval {
- no indirect 'hlagh';
  my $warn;
  local $SIG{__WARN__} = sub { $warn = join ' ', @_ };
- eval "die qq{ok\n}; \$obj = new Hlagh1;";
+ eval "die qq{ok\n}; no indirect 'hlagh'; \$obj = new Hlagh1;";
  is($@, "ok\n", 'no indirect "hlagh" didn\'t croak');
  like($warn, qr/^Indirect\s+call\s+of\s+method\s+"new"\s+on\s+object\s+"Hlagh1"/, 'no indirect "hlagh" enables the pragma');
 }
