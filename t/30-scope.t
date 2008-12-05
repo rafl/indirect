@@ -43,7 +43,7 @@ sub expect {
 }
 
 {
- my $w;
+ my $w = '';
  local $SIG{__WARN__} = sub {
   $w = 'more than 2 warnings' if $w;
   $w = join '', 'warn:', @_
