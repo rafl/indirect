@@ -14,30 +14,41 @@ use Test::More tests => 3 * 4;
 sub meh;
 
 {
- local $/ = "####\n";
+ local $/ = "####";
  while (<DATA>) {
   chomp;
   s/\s*$//;
+  s/(.*?)$//m;
+  my ($skip, $prefix) = split /#+/, $1;
+  $skip   = 0  unless defined $skip;
+  $prefix = '' unless defined $prefix;
+  s/\s*//;
 
-  local $SIG{__WARN__} = sub { die 'warn:' . join(' ', @_) };
+SKIP:
+  {
+   skip "$_: $skip" => 4 if eval $skip;
 
-  eval "die qq{ok\\n}; use indirect; $_";
-  is($@, "ok\n", "use indirect: $_");
+   local $SIG{__WARN__} = sub { die 'warn:' . join(' ', @_) };
 
-  eval "die qq{ok\n}; no indirect; $_";
-  is($@, "ok\n", "no indirect: $_");
+   eval "die qq{ok\\n}; $prefix; use indirect; $_";
+   is($@, "ok\n", "use indirect: $_");
 
-  s/Hlagh/Dongs/g;
+   eval "die qq{ok\n}; $prefix; no indirect; $_";
+   is($@, "ok\n", "no indirect: $_");
 
-  eval "die qq{ok\\n}; use indirect; $_";
-  is($@, "ok\n", "use indirect, defined: $_");
+   s/Hlagh/Dongs/g;
 
-  eval "die qq{the code compiled but it shouldn't have\n}; no indirect; $_";
-  like($@, qr/^warn:Indirect\s+call\s+of\s+method\s+"meh"\s+on\s+object\s+"Dongs"/, "no indirect, defined: $_");
+   eval "die qq{ok\\n}; $prefix; use indirect; $_";
+   is($@, "ok\n", "use indirect, defined: $_");
+
+   eval "die qq{the code compiled but it shouldn't have\n}; $prefix; no indirect; $_";
+   like($@, qr/^warn:Indirect\s+call\s+of\s+method\s+"meh"\s+on\s+object\s+"Dongs"/, "no indirect, defined: $_");
+  }
  }
 }
 
 __DATA__
+
 meh Hlagh->new;
 ####
 meh Hlagh->new();
