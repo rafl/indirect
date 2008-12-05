@@ -11,11 +11,8 @@ use warnings;
 
 use Test::More tests => 50 * 6 + 2;
 
-use feature 'state';
-
 my ($obj, $x);
 our ($y, $bloop);
-state $z;
 
 sub expect {
  my ($pkg) = @_;
@@ -151,11 +148,11 @@ meh $y;
 meh $y 1, 2;
 ####
 meh $y, 1, 2;
-####
+#### # use feature 'state'; state $z
 meh $z;
-####
+#### # use feature 'state'; state $z
 meh $z 1, 2;
-####
+#### # use feature 'state'; state $z
 meh $z, 1, 2;
 ####
 package sploosh;

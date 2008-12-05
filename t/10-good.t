@@ -11,11 +11,8 @@ use warnings;
 
 use Test::More tests => 52 * 4;
 
-use feature 'state';
-
 my ($obj, $pkg, $cb, $x, @a);
 our $y;
-state $z;
 sub meh;
 
 {
@@ -150,9 +147,9 @@ meh $x, 1, 2;
 meh $y;
 ####
 meh $y, 1, 2;
-####
+#### # use feature 'state'; state $z
 meh $z;
-####
+#### # use feature 'state'; state $z
 meh $z, 1, 2;
 ####
 print;
@@ -166,9 +163,9 @@ print $x "oh hai\n";
 print $y;
 ####
 print $y "dongs\n";
-####
+#### # use feature 'state'; state $z
 print $z;
-####
+#### # use feature 'state'; state $z
 print $z "hlagh\n";
 ####
 print STDOUT "bananananananana\n";
