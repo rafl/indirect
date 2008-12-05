@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               indirect
-version:            0.08
+version:            0.09
 abstract:           Lexically warn about using the indirect object syntax.
 author:
     - Vincent Pit <perl@profvince.com>
@@ -14,7 +14,7 @@ no_index:
     directory:
         - t
         - inc
-generated_by:       ExtUtils::MakeMaker version 6.46
+generated_by:       ExtUtils::MakeMaker version 6.48
 meta-spec:
     url:      http://module-build.sourceforge.net/META-spec-v1.4.html
     version:  1.4

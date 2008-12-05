@@ -1,5 +1,10 @@
 Revision history for indirect
 
+0.09    2008-12-05 20:35 UTC
+        + Add : Support for perl 5.8.
+        + Tst : Skip a test in t/10-good.t that randomly segfaults for (I guess)
+                systems stricter than linux in the way they manage their memory.
+
 0.08    2008-10-22 14:45 UTC
         + Fix : A rare edge case for package whose names are prefix of 'main'.
         + Tst : Test $$ as variable and state variables.
