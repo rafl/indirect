@@ -6,9 +6,14 @@ use warnings;
 my $tests;
 BEGIN { $tests = 8 }
 
-use Test::More tests => $tests + 2;
+use Test::More tests => 1 + $tests + 1 + 2;
 
 my %wrong = map { $_ => 1 } 2, 3, 5, 7;
+
+sub expect {
+ my ($pkg) = @_;
+ return qr/^warn:Indirect\s+call\s+of\s+method\s+"new"\s+on\s+object\s+"$pkg"/;
+}
 
 {
  my $code = do { local $/; <DATA> };
@@ -29,12 +34,36 @@ my %wrong = map { $_ => 1 } 2, 3, 5, 7;
  for (1 .. $tests) {
   my $w = $res{$_};
   if ($wrong{$_}) {
-   like($w, qr/^warn:Indirect\s+call\s+of\s+method\s+"new"\s+on\s+object\s+"P$_"/, "$_ should warn");
+   like($w, expect("P$_"), "$_ should warn");
   } else {
    is($w, undef, "$_ shouldn't warn");
   }
  }
  is($left, 0, 'nothing left');
+}
+
+{
+ my $w;
+ local $SIG{__WARN__} = sub {
+  $w = 'more than 2 warnings' if $w;
+  $w = join '', 'warn:', @_
+ };
+ {
+  eval 'no indirect; my $x = new Foo';
+  like($w, expect('Foo'), "eval 'no indirect; my \$x = new Foo'");
+ }
+ $w = '';
+ {
+  {
+   no indirect;
+   eval 'my $x = new Bar';
+  }
+  if ($] < 5.010) {
+   is($w, '', "eval 'no indirect; my \$x = new Bar'");
+  } else {
+   like($w, expect('Bar'), "no indirect; eval 'my \$x = new Bar'");
+  }
+ }
 }
 
 __DATA__
