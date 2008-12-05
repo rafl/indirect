@@ -4,11 +4,11 @@ use strict;
 use warnings;
 
 my $tests;
-BEGIN { $tests = 8 }
+BEGIN { $tests = 10 }
 
 use Test::More tests => 1 + $tests + 1 + 2;
 
-my %wrong = map { $_ => 1 } 2, 3, 5, 7;
+my %wrong = map { $_ => 1 } 2, 3, 5, 7, 9, 10;
 
 sub expect {
  my ($pkg) = @_;
@@ -91,3 +91,10 @@ my $g = new P7;
 use indirect;
 
 my $h = new P8;
+
+{
+ no indirect;
+ eval { my $i = new P9 };
+}
+
+eval { no indirect; my $j = new P10 };
