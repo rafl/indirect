@@ -76,6 +76,9 @@ L<XSLoader> (standard since perl 5.006).
 
 C<meth $obj> (no semicolon) at the end of a file won't be seen as an indirect object syntax, although it will as soon as there is another token before the end (as in C<meth $obj;> or C<meth $obj 1>).
 
+With 5.8 perls, the pragma does not propagate into C<eval STRING>.
+This is due to a shortcoming in the way perl handles the hints hash, and is fixed in perl 5.10.
+
 =head1 AUTHOR
 
 Vincent Pit, C<< <perl at profvince.com> >>, L<http://www.profvince.com>.
