@@ -68,10 +68,9 @@ eval {
  no indirect 'hlagh';
  my $warn;
  local $SIG{__WARN__} = sub { $warn = join ' ', @_ };
- eval "die qq{the code compiled but it shouldn't have\n}; \$obj = new Hlagh1;";
+ eval "die qq{ok\n}; \$obj = new Hlagh1;";
+ is($@, "ok\n", 'no indirect "hlagh" didn\'t croak');
  like($warn, qr/^Indirect\s+call\s+of\s+method\s+"new"\s+on\s+object\s+"Hlagh1"/, 'no indirect "hlagh" enables the pragma');
- eval "die qq{the code compiled but it shouldn't have\n}; \$obj = new Hlagh2;";
- like($warn, qr/^Indirect\s+call\s+of\s+method\s+"new"\s+on\s+object\s+"Hlagh2"/, 'no indirect "hlagh" doesn\'t croak');
 }
 
 __DATA__
