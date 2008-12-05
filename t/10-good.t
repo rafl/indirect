@@ -9,7 +9,7 @@ package main;
 use strict;
 use warnings;
 
-use Test::More tests => 53 * 4;
+use Test::More tests => 52 * 4;
 
 use feature 'state';
 
@@ -167,8 +167,6 @@ $x->foo($pkg->$cb)
 $obj = "apple ${\(new Hlagh)} pear"
 ####
 $obj = "apple @{[new Hlagh]} pear"
-####
-s/dongs/new Hlagh/e;
 ####
 exec $x $x, @a;
 ####
