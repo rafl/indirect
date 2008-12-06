@@ -171,7 +171,7 @@ print $z "hlagh\n";
 print STDOUT "bananananananana\n";
 ####
 $x->foo($pkg->$cb)
-#### "seems to segfault with strict libc implementations" #
+####
 $obj = "apple ${\(new Hlagh)} pear"
 ####
 $obj = "apple @{[new Hlagh]} pear"

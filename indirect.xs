@@ -203,8 +203,9 @@ STATIC OP *indirect_ck_rv2sv(pTHX_ OP *o) {
   SV *sv;
   const char *name = NULL, *s;
   STRLEN len;
+  OPCODE type = op->op_type;
 
-  switch (op->op_type) {
+  switch (type) {
    case OP_GV:
    case OP_GVSV: {
     GV *gv = cGVOPx_gv(op);
@@ -212,12 +213,12 @@ STATIC OP *indirect_ck_rv2sv(pTHX_ OP *o) {
     len  = GvNAMELEN(gv);
     break;
    }
-   default: {
-    SV *sv = cSVOPx_sv(op);
-    if (SvPOK(sv) && (SvTYPE(sv) >= SVt_PV))
-     name = SvPV_const(sv, len);
-    break;
-   }
+   default:
+    if ((PL_opargs[type] & OA_CLASS_MASK) == OA_SVOP) {
+     SV *sv = cSVOPx_sv(op);
+     if (SvPOK(sv) && (SvTYPE(sv) >= SVt_PV))
+      name = SvPV_const(sv, len);
+    }
   }
   if (!name)
    goto done;
