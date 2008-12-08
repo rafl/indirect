@@ -2,7 +2,7 @@ NAME
     indirect - Lexically warn about using the indirect object syntax.
 
 VERSION
-    Version 0.09
+    Version 0.09_01
 
 SYNOPSIS
         no indirect;
@@ -49,8 +49,8 @@ CAVEATS
     token before the end (as in "meth $obj;" or "meth $obj 1").
 
     With 5.8 perls, the pragma does not propagate into "eval STRING". This
-    is due to a shortcoming in the way perl handles the hints hash, and is
-    fixed in perl 5.10.
+    is due to a shortcoming in the way perl handles the hints hash, which is
+    addressed in perl 5.10.
 
 AUTHOR
     Vincent Pit, "<perl at profvince.com>", <http://www.profvince.com>.

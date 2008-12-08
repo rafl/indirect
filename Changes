@@ -1,5 +1,10 @@
 Revision history for indirect
 
+0.09_01 2008-12-08 17:55 UTC
+        + Fix : Invalid memory read with "${\(new Foo)}" constructs. The
+                corresponding test is turned back on.
+        + Tst : Refinements in t/30-scope.t
+
 0.09    2008-12-05 20:35 UTC
         + Add : Support for perl 5.8.
         + Tst : Skip a test in t/10-good.t that randomly segfaults for (I guess)
