@@ -17,20 +17,19 @@ sub expect {
 
 {
  my $code = do { local $/; <DATA> };
- my @warns;
+ my (%res, @left);
  {
-  local $SIG{__WARN__} = sub { push @warns, join '', 'warn:', @_ };
+  local $SIG{__WARN__} = sub {
+   my $w = join '', 'warn:', @_;
+   if ($w =~ /"P(\d+)"/ and not exists $res{$1}) {
+    $res{$1} = $w;
+   } else {
+    push @left, $w;
+   }
+  };
   eval "die qq{ok\\n}; $code";
   is($@, "ok\n", 'DATA compiled fine');
  }
- my $left = 0;
- my %res = map {
-  if (/"P(\d+)"/) {
-   $1 => $_
-  } else {
-   ++$left; ()
-  }
- } @warns;
  for (1 .. $tests) {
   my $w = $res{$_};
   if ($wrong{$_}) {
@@ -39,7 +38,8 @@ sub expect {
    is($w, undef, "$_ shouldn't warn");
   }
  }
- is($left, 0, 'nothing left');
+ is(@left, 0, 'nothing left');
+ diag "Extraneous warnings:\n", @left if @left;
 }
 
 {
