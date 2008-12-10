@@ -140,17 +140,21 @@ STATIC void indirect_map_delete(pTHX_ const OP *o) {
  hv_delete(indirect_map, buf, OP2STR(o), G_DISCARD);
 }
 
-STATIC void indirect_map_clean(pTHX_ const OP *o) {
-#define indirect_map_clean(O) indirect_map_clean(aTHX_ (O))
+STATIC void indirect_map_clean_kids(pTHX_ const OP *o) {
+#define indirect_map_clean_kids(O) indirect_map_clean_kids(aTHX_ (O))
  if (o->op_flags & OPf_KIDS) {
   const OP *kid = cUNOPo->op_first;
   for (; kid; kid = kid->op_sibling) {
+   indirect_map_clean_kids(kid);
    indirect_map_delete(kid);
-   indirect_map_clean(kid);
   }
- } else {
-  indirect_map_delete(o);
  }
+}
+
+STATIC void indirect_map_clean(pTHX_ const OP *o) {
+#define indirect_map_clean(O) indirect_map_clean(aTHX_ (O))
+ indirect_map_clean_kids(o);
+ indirect_map_delete(o);
 }
 
 STATIC const char *indirect_find(pTHX_ SV *sv, const char *s) {
