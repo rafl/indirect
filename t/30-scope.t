@@ -17,14 +17,15 @@ sub expect {
 
 {
  my $code = do { local $/; <DATA> };
- my (%res, @left);
+ my (%res, $num, @left);
  {
   local $SIG{__WARN__} = sub {
+   ++$num;
    my $w = join '', 'warn:', @_;
    if ($w =~ /"P(\d+)"/ and not exists $res{$1}) {
     $res{$1} = $w;
    } else {
-    push @left, $w;
+    push @left, "[$num] $w";
    }
   };
   eval "die qq{ok\\n}; $code";
