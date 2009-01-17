@@ -2,7 +2,7 @@ NAME
     indirect - Lexically warn about using the indirect object syntax.
 
 VERSION
-    Version 0.09_01
+    Version 0.10
 
 SYNOPSIS
         no indirect;
@@ -38,11 +38,6 @@ METHODS
   "import"
     Magically called at each "use indirect". Turns the module off.
 
-DEPENDENCIES
-    perl 5.8.
-
-    XSLoader (standard since perl 5.006).
-
 CAVEATS
     "meth $obj" (no semicolon) at the end of a file won't be seen as an
     indirect object syntax, although it will as soon as there is another
@@ -51,6 +46,11 @@ CAVEATS
     With 5.8 perls, the pragma does not propagate into "eval STRING". This
     is due to a shortcoming in the way perl handles the hints hash, which is
     addressed in perl 5.10.
+
+DEPENDENCIES
+    perl 5.8.
+
+    XSLoader (standard since perl 5.006).
 
 AUTHOR
     Vincent Pit, "<perl at profvince.com>", <http://www.profvince.com>.
@@ -76,7 +76,7 @@ ACKNOWLEDGEMENTS
     Bram, for motivation and advices.
 
 COPYRIGHT & LICENSE
-    Copyright 2008 Vincent Pit, all rights reserved.
+    Copyright 2008-2009 Vincent Pit, all rights reserved.
 
     This program is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.

@@ -1,5 +1,8 @@
 Revision history for indirect
 
+0.10    2009-01-17 12:40 UTC
+        Re-release 0.09_01 as stable.
+
 0.09_01 2008-12-08 17:55 UTC
         + Fix : Invalid memory read with "${\(new Foo)}" constructs. The
                 corresponding test is turned back on.
