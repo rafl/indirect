@@ -222,9 +222,9 @@ STATIC OP *indirect_ck_rv2sv(pTHX_ OP *o) {
    }
    default:
     if ((PL_opargs[type] & OA_CLASS_MASK) == OA_SVOP) {
-     SV *sv = cSVOPx_sv(op);
-     if (SvPOK(sv) && (SvTYPE(sv) >= SVt_PV))
-      name = SvPV_const(sv, len);
+     SV *nsv = cSVOPx_sv(op);
+     if (SvPOK(nsv) && (SvTYPE(nsv) >= SVt_PV))
+      name = SvPV_const(nsv, len);
     }
   }
   if (!name)
