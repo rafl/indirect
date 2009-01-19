@@ -210,7 +210,7 @@ STATIC OP *indirect_ck_rv2sv(pTHX_ OP *o) {
   SV *sv;
   const char *name = NULL, *s;
   STRLEN len;
-  OPCODE type = op->op_type;
+  OPCODE type = (OPCODE) op->op_type;
 
   switch (type) {
    case OP_GV:
