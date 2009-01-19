@@ -87,11 +87,14 @@ STATIC IV indirect_hint(pTHX) {
 STATIC HV *indirect_map = NULL;
 STATIC const char *indirect_linestr = NULL;
 
-#define OP2STR(O) (sprintf(buf, "%u", PTR2UV(o)))
+/* We need (CHAR_BIT * sizeof(UV)) / 4 + 1 chars, but it's just better to take
+ * a power of two */
+#define OP2STR_BUF char buf[(CHAR_BIT * sizeof(UV)) / 2]
+#define OP2STR(O)  (sprintf(buf, "%"UVxf, PTR2UV(O)))
 
 STATIC void indirect_map_store(pTHX_ const OP *o, const char *src, SV *sv) {
 #define indirect_map_store(O, S, N) indirect_map_store(aTHX_ (O), (S), (N))
- char buf[32];
+ OP2STR_BUF;
  const char *pl_linestr;
  SV *val;
 
@@ -117,7 +120,7 @@ STATIC void indirect_map_store(pTHX_ const OP *o, const char *src, SV *sv) {
 
 STATIC const char *indirect_map_fetch(pTHX_ const OP *o, SV ** const name) {
 #define indirect_map_fetch(O, S) indirect_map_fetch(aTHX_ (O), (S))
- char buf[32];
+ OP2STR_BUF;
  SV **val;
 
  if (indirect_linestr != SvPVX_const(PL_linestr))
@@ -135,7 +138,7 @@ STATIC const char *indirect_map_fetch(pTHX_ const OP *o, SV ** const name) {
 
 STATIC void indirect_map_delete(pTHX_ const OP *o) {
 #define indirect_map_delete(O) indirect_map_delete(aTHX_ (O))
- char buf[32];
+ OP2STR_BUF;
 
  hv_delete(indirect_map, buf, OP2STR(o), G_DISCARD);
 }
