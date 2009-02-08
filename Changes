@@ -1,5 +1,9 @@
 Revision history for indirect
 
+0.11    2009-02-08 18:35 UTC
+        + Fix : Potential collisions by hashing pointers with a wrong format.
+        + Upd : Resources in META.yml.
+
 0.10    2009-01-17 12:40 UTC
         Re-release 0.09_01 as stable.
 

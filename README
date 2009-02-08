@@ -2,7 +2,7 @@ NAME
     indirect - Lexically warn about using the indirect object syntax.
 
 VERSION
-    Version 0.10
+    Version 0.11
 
 SYNOPSIS
         no indirect;
