@@ -140,7 +140,7 @@ STATIC void indirect_map_delete(pTHX_ const OP *o) {
 #define indirect_map_delete(O) indirect_map_delete(aTHX_ (O))
  OP2STR_BUF;
 
- hv_delete(indirect_map, buf, OP2STR(o), G_DISCARD);
+ (void)hv_delete(indirect_map, buf, OP2STR(o), G_DISCARD);
 }
 
 STATIC void indirect_map_clean_kids(pTHX_ const OP *o) {
