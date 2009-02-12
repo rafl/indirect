@@ -146,7 +146,7 @@ STATIC void indirect_map_delete(pTHX_ const OP *o) {
 STATIC void indirect_map_clean_kids(pTHX_ const OP *o) {
 #define indirect_map_clean_kids(O) indirect_map_clean_kids(aTHX_ (O))
  if (o->op_flags & OPf_KIDS) {
-  const OP *kid = cUNOPo->op_first;
+  const OP *kid = ((const UNOP *) o)->op_first;
   for (; kid; kid = kid->op_sibling) {
    indirect_map_clean_kids(kid);
    indirect_map_delete(kid);
