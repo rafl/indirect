@@ -333,7 +333,7 @@ STATIC OP *indirect_ck_entersub(pTHX_ OP *o) {
   oo = o;
   do {
    op = (LISTOP *) oo;
-   if (!op->op_flags & OPf_KIDS)
+   if (!(op->op_flags & OPf_KIDS))
     goto done;
    oo = op->op_first;
   } while (oo->op_type != OP_PUSHMARK);
