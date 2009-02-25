@@ -321,37 +321,42 @@ STATIC const char indirect_msg[] = "Indirect call of method \"%s\" on object \"%
 STATIC OP *(*indirect_old_ck_entersub)(pTHX_ OP *) = 0;
 
 STATIC OP *indirect_ck_entersub(pTHX_ OP *o) {
- LISTOP *op;
- OP *om, *oo;
  IV hint = indirect_hint();
 
  o = CALL_FPTR(indirect_old_ck_entersub)(aTHX_ o);
 
  if (hint) {
-  const char *pm, *po;
-  SV *svm, *svo;
-  oo = o;
+  const char *mpos, *opos;
+  SV *mnamesv, *onamesv;
+  OP *mop, *oop;
+  LISTOP *lop;
+
+  oop = o;
   do {
-   op = (LISTOP *) oo;
-   if (!(op->op_flags & OPf_KIDS))
+   lop = (LISTOP *) oop;
+   if (!(lop->op_flags & OPf_KIDS))
     goto done;
-   oo = op->op_first;
-  } while (oo->op_type != OP_PUSHMARK);
-  oo = oo->op_sibling;
-  om = op->op_last;
-  if (om->op_type == OP_METHOD)
-   om = cUNOPx(om)->op_first;
-  else if (om->op_type != OP_METHOD_NAMED)
+   oop = lop->op_first;
+  } while (oop->op_type != OP_PUSHMARK);
+  oop = oop->op_sibling;
+  mop = lop->op_last;
+
+  if (mop->op_type == OP_METHOD)
+   mop = cUNOPx(mop)->op_first;
+  else if (mop->op_type != OP_METHOD_NAMED)
    goto done;
-  pm = indirect_map_fetch(om, &svm);
-  po = indirect_map_fetch(oo, &svo);
-  if (pm && po && pm < po) {
-   const char *psvm = SvPV_nolen_const(svm), *psvo = SvPV_nolen_const(svo);
+
+  mpos = indirect_map_fetch(mop, &mnamesv);
+  opos = indirect_map_fetch(oop, &onamesv);
+  if (mpos && opos && mpos < opos) {
+   const char *mname = SvPV_nolen_const(mnamesv);
+   const char *oname = SvPV_nolen_const(onamesv);
    if (hint == 2)
-    croak(indirect_msg, psvm, psvo);
+    croak(indirect_msg, mname, oname);
    else
-    warn(indirect_msg, psvm, psvo);
+    warn(indirect_msg, mname, oname);
   }
+
 done:
   indirect_map_clean(o);
  }
