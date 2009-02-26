@@ -347,8 +347,14 @@ STATIC OP *indirect_ck_entersub(pTHX_ OP *o) {
    goto done;
 
   mpos = indirect_map_fetch(mop, &mnamesv);
+  if (!mpos)
+   goto done;
+
   opos = indirect_map_fetch(oop, &onamesv);
-  if (mpos && opos && mpos < opos) {
+  if (!opos)
+   goto done;
+
+  if (mpos < opos) {
    const char *mname = SvPV_nolen_const(mnamesv);
    const char *oname = SvPV_nolen_const(onamesv);
    if (hint == 2)
