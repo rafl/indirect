@@ -18,7 +18,7 @@ my %META = (
   bugtracker => "http://rt.cpan.org/NoAuth/ReportBug.html?Queue=$dist",
   homepage   => "http://search.cpan.org/dist/$dist/",
   license    => 'http://dev.perl.org/licenses/',
-  repository => "http://git.profvince.com/perl/modules/$dist.git",
+  repository => "http://git.profvince.com/?p=perl/modules/$dist.git",
  },
 );
 
