@@ -95,7 +95,6 @@ STATIC const char *indirect_linestr = NULL;
 STATIC void indirect_map_store(pTHX_ const OP *o, const char *src, SV *sv) {
 #define indirect_map_store(O, S, N) indirect_map_store(aTHX_ (O), (S), (N))
  OP2STR_BUF;
- const char *pl_linestr;
  SV *val;
 
  /* When lex_inwhat is set, we're in a quotelike environment (qq, qr, but not q)
@@ -103,7 +102,7 @@ STATIC void indirect_map_store(pTHX_ const OP *o, const char *src, SV *sv) {
   * still be alive somewhere. */
 
  if (!PL_lex_inwhat) {
-  pl_linestr = SvPVX_const(PL_linestr);
+  const char *pl_linestr = SvPVX_const(PL_linestr);
   if (indirect_linestr != pl_linestr) {
    hv_clear(indirect_map);
    indirect_linestr = pl_linestr;
