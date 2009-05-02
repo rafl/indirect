@@ -57,13 +57,13 @@ BEGIN {
 }
 
 sub import {
- $^H{indirect} = undef;
+ $^H{+(__PACKAGE__)} = undef;
 }
 
 sub unimport {
  (undef, my $type) = @_;
  $^H |= 0x00020000;
- $^H{indirect} = (defined $type and $type eq ':fatal') ? 2 : 1;
+ $^H{+(__PACKAGE__)} = (defined $type and $type eq ':fatal') ? 2 : 1;
 }
 
 =head1 CAVEATS

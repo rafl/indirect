@@ -6,6 +6,11 @@
 #include "perl.h"
 #include "XSUB.h"
 
+#define __PACKAGE__     "indirect"
+#define __PACKAGE_LEN__ (sizeof(__PACKAGE__)-1)
+
+/* --- Compatibility wrappers ---------------------------------------------- */
+
 #ifndef SvPV_const
 # define SvPV_const SvPV
 #endif
@@ -70,11 +75,12 @@ STATIC IV indirect_hint(pTHX) {
 #if I_HAS_PERL(5, 10, 0)
  id = Perl_refcounted_he_fetch(aTHX_ PL_curcop->cop_hints_hash,
                                      NULL,
-                                     "indirect", 8,
+                                     __PACKAGE__, __PACKAGE_LEN__,
                                      0,
                                      indirect_hash);
 #else
- SV **val = hv_fetch(GvHV(PL_hintgv), "indirect", 8, indirect_hash);
+ SV **val = hv_fetch(GvHV(PL_hintgv), __PACKAGE__, __PACKAGE_LEN__,
+                                                                 indirect_hash);
  if (!val)
   return 0;
  id = *val;
@@ -363,8 +369,10 @@ PROTOTYPES: DISABLE
 BOOT:
 {
  if (!indirect_initialized++) {
-  PERL_HASH(indirect_hash, "indirect", 8);
   indirect_map = ptable_new();
+
+  PERL_HASH(indirect_hash, __PACKAGE__, __PACKAGE_LEN__);
+
   indirect_old_ck_const    = PL_check[OP_CONST];
   PL_check[OP_CONST]       = MEMBER_TO_FPTR(indirect_ck_const);
   indirect_old_ck_rv2sv    = PL_check[OP_RV2SV];
