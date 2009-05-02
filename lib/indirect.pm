@@ -73,6 +73,12 @@ sub unimport {
  ();
 }
 
+=head1 CONSTANTS
+
+=head2 C<I_THREADSAFE>
+
+True iff the module could have been built when thread-safety features.
+
 =head1 CAVEATS
 
 C<meth $obj> (no semicolon) at the end of a file won't be seen as an indirect object syntax, although it will as soon as there is another token before the end (as in C<meth $obj;> or C<meth $obj 1>).

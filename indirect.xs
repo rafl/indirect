@@ -528,6 +528,7 @@ PROTOTYPES: ENABLE
 BOOT:
 {
  if (!indirect_initialized++) {
+  HV *stash;
 #if I_THREADSAFE
   MY_CXT_INIT;
   MY_CXT.tbl   = ptable_new();
@@ -548,6 +549,9 @@ BOOT:
   PL_check[OP_METHOD]      = MEMBER_TO_FPTR(indirect_ck_method);
   indirect_old_ck_entersub = PL_check[OP_ENTERSUB];
   PL_check[OP_ENTERSUB]    = MEMBER_TO_FPTR(indirect_ck_entersub);
+
+  stash = gv_stashpvn(__PACKAGE__, __PACKAGE_LEN__, 1);
+  newCONSTSUB(stash, "I_THREADSAFE", newSVuv(I_THREADSAFE));
  }
 }
 
