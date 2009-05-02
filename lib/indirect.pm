@@ -58,12 +58,19 @@ BEGIN {
 
 sub import {
  $^H{+(__PACKAGE__)} = undef;
+ ();
 }
+
+my $msg = sub { "Indirect call of method \"$_[1]\" on object \"$_[0]\"" };
 
 sub unimport {
  (undef, my $type) = @_;
  $^H |= 0x00020000;
- $^H{+(__PACKAGE__)} = (defined $type and $type eq ':fatal') ? 2 : 1;
+ my $cb = (defined $type and $type eq ':fatal')
+           ? sub { die  $msg->(@_) }
+           : sub { warn $msg->(@_) };
+ $^H{+(__PACKAGE__)} = _tag($cb);
+ ();
 }
 
 =head1 CAVEATS
