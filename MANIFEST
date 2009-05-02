@@ -4,6 +4,7 @@ Makefile.PL
 README
 indirect.xs
 lib/indirect.pm
+ptable.h
 samples/indirect.pl
 t/00-load.t
 t/10-good.t

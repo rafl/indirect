@@ -84,17 +84,26 @@ STATIC IV indirect_hint(pTHX) {
 
 /* ... op -> source position ............................................... */
 
-STATIC HV *indirect_map = NULL;
-STATIC const char *indirect_linestr = NULL;
+#define PTABLE_NAME        ptable_map
+#define PTABLE_VAL_FREE(V) SvREFCNT_dec(V)
 
-/* We need (CHAR_BIT * sizeof(UV)) / 4 + 1 chars, but it's just better to take
- * a power of two */
-#define OP2STR_BUF char buf[(CHAR_BIT * sizeof(UV)) / 2]
-#define OP2STR(O)  (sprintf(buf, "%"UVxf, PTR2UV(O)))
+#define pPTBL  pTHX
+#define pPTBL_ pTHX_
+#define aPTBL  aTHX
+#define aPTBL_ aTHX_
+
+#include "ptable.h"
+
+#define ptable_map_store(T, K, V) ptable_map_store(aTHX_ (T), (K), (V))
+#define ptable_map_clear(T)       ptable_map_clear(aTHX_ (T))
+#define ptable_map_free(T)        ptable_map_free(aTHX_ (T))
+
+STATIC ptable *indirect_map = NULL;
+
+STATIC const char *indirect_linestr = NULL;
 
 STATIC void indirect_map_store(pTHX_ const OP *o, const char *src, SV *sv) {
 #define indirect_map_store(O, S, N) indirect_map_store(aTHX_ (O), (S), (N))
- OP2STR_BUF;
  SV *val;
 
  /* When lex_inwhat is set, we're in a quotelike environment (qq, qr, but not q)
@@ -104,7 +113,7 @@ STATIC void indirect_map_store(pTHX_ const OP *o, const char *src, SV *sv) {
  if (!PL_lex_inwhat) {
   const char *pl_linestr = SvPVX_const(PL_linestr);
   if (indirect_linestr != pl_linestr) {
-   hv_clear(indirect_map);
+   ptable_map_clear(indirect_map);
    indirect_linestr = pl_linestr;
   }
  }
@@ -114,49 +123,25 @@ STATIC void indirect_map_store(pTHX_ const OP *o, const char *src, SV *sv) {
  SvUVX(val) = PTR2UV(src);
  SvIOK_on(val);
  SvIsUV_on(val);
- if (!hv_store(indirect_map, buf, OP2STR(o), val, 0)) SvREFCNT_dec(val);
+
+ ptable_map_store(indirect_map, o, val);
 }
 
 STATIC const char *indirect_map_fetch(pTHX_ const OP *o, SV ** const name) {
 #define indirect_map_fetch(O, S) indirect_map_fetch(aTHX_ (O), (S))
- OP2STR_BUF;
- SV **val;
+ SV *val;
 
  if (indirect_linestr != SvPVX_const(PL_linestr))
   return NULL;
 
- val = hv_fetch(indirect_map, buf, OP2STR(o), 0);
+ val = ptable_fetch(indirect_map, o);
  if (!val) {
   *name = NULL;
   return NULL;
  }
 
- *name = *val;
- return INT2PTR(const char *, SvUVX(*val));
-}
-
-STATIC void indirect_map_delete(pTHX_ const OP *o) {
-#define indirect_map_delete(O) indirect_map_delete(aTHX_ (O))
- OP2STR_BUF;
-
- (void)hv_delete(indirect_map, buf, OP2STR(o), G_DISCARD);
-}
-
-STATIC void indirect_map_clean_kids(pTHX_ const OP *o) {
-#define indirect_map_clean_kids(O) indirect_map_clean_kids(aTHX_ (O))
- if (o->op_flags & OPf_KIDS) {
-  const OP *kid = ((const UNOP *) o)->op_first;
-  for (; kid; kid = kid->op_sibling) {
-   indirect_map_clean_kids(kid);
-   indirect_map_delete(kid);
-  }
- }
-}
-
-STATIC void indirect_map_clean(pTHX_ const OP *o) {
-#define indirect_map_clean(O) indirect_map_clean(aTHX_ (O))
- indirect_map_clean_kids(o);
- indirect_map_delete(o);
+ *name = val;
+ return INT2PTR(const char *, SvUVX(val));
 }
 
 STATIC const char *indirect_find(pTHX_ SV *sv, const char *s) {
@@ -361,11 +346,9 @@ STATIC OP *indirect_ck_entersub(pTHX_ OP *o) {
    else
     warn(indirect_msg, mname, oname);
   }
-
-done:
-  indirect_map_clean(o);
  }
 
+done:
  return o;
 }
 
@@ -381,7 +364,7 @@ BOOT:
 {
  if (!indirect_initialized++) {
   PERL_HASH(indirect_hash, "indirect", 8);
-  indirect_map = newHV();
+  indirect_map = ptable_new();
   indirect_old_ck_const    = PL_check[OP_CONST];
   PL_check[OP_CONST]       = MEMBER_TO_FPTR(indirect_ck_const);
   indirect_old_ck_rv2sv    = PL_check[OP_RV2SV];
