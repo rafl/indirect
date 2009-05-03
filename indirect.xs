@@ -11,6 +11,14 @@
 
 /* --- Compatibility wrappers ---------------------------------------------- */
 
+#ifndef NOOP
+# define NOOP
+#endif
+
+#ifndef dNOOP
+# define dNOOP
+#endif
+
 #ifndef SvPV_const
 # define SvPV_const SvPV
 #endif
@@ -93,15 +101,23 @@
 # endif
 #else
 # define I_THREADSAFE 0
+# undef  dMY_CXT
+# define dMY_CXT      dNOOP
+# undef  MY_CXT
+# define MY_CXT       indirect_globaldata
+# undef  START_MY_CXT
+# define START_MY_CXT STATIC my_cxt_t MY_CXT;
+# undef  MY_CXT_INIT
+# define MY_CXT_INIT  NOOP
+# undef  MY_CXT_CLONE
+# define MY_CXT_CLONE NOOP
 #endif
 
 /* --- Helpers ------------------------------------------------------------- */
 
-/* ... Thread-safe hints ................................................... */
+/* ... Pointer table ....................................................... */
 
-#if I_THREADSAFE
-
-#define PTABLE_NAME        ptable_hints
+#define PTABLE_NAME        ptable
 #define PTABLE_VAL_FREE(V) if ((V) && !SvIS_FREED((SV *) (V))) SvREFCNT_dec(V)
 
 #define pPTBL  pTHX
@@ -111,19 +127,37 @@
 
 #include "ptable.h"
 
-#define ptable_hints_store(T, K, V) ptable_hints_store(aTHX_ (T), (K), (V))
-#define ptable_hints_free(T)        ptable_hints_free(aTHX_ (T))
+#define ptable_store(T, K, V) ptable_store(aTHX_ (T), (K), (V))
+#define ptable_clear(T)       ptable_clear(aTHX_ (T))
+#define ptable_free(T)        ptable_free(aTHX_ (T))
+
+/* ... Thread-safe hints ................................................... */
 
 #define MY_CXT_KEY __PACKAGE__ "::_guts" XS_VERSION
 
+#if I_THREADSAFE
+
 typedef struct {
- ptable *tbl;
- tTHX    owner;
+ ptable     *tbl;
+ ptable     *map;
+ tTHX        owner;
+ const char *linestr;
 } my_cxt_t;
+
+#else
+
+typedef struct {
+ ptable     *map;
+ const char *linestr;
+} my_cxt_t;
+
+#endif /* I_THREADSAFE */
 
 START_MY_CXT
 
-STATIC void indirect_ptable_hints_clone(pTHX_ ptable_ent *ent, void *ud_) {
+#if I_THREADSAFE
+
+STATIC void indirect_ptable_clone(pTHX_ ptable_ent *ent, void *ud_) {
  my_cxt_t *ud  = ud_;
  SV       *val = ent->val;
 
@@ -140,7 +174,7 @@ STATIC void indirect_ptable_hints_clone(pTHX_ ptable_ent *ent, void *ud_) {
   }
  }
 
- ptable_hints_store(ud->tbl, ent->key, val);
+ ptable_store(ud->tbl, ent->key, val);
  SvREFCNT_inc(val);
 }
 
@@ -158,7 +192,8 @@ STATIC void indirect_thread_cleanup(pTHX_ void *ud) {
  } else {
   dMY_CXT;
   PerlMemShared_free(level);
-  ptable_hints_free(MY_CXT.tbl);
+  ptable_free(MY_CXT.map);
+  ptable_free(MY_CXT.tbl);
  }
 }
 
@@ -170,7 +205,7 @@ STATIC SV *indirect_tag(pTHX_ SV *value) {
  /* We only need for the key to be an unique tag for looking up the value later.
   * Allocated memory provides convenient unique identifiers, so that's why we
   * use the value pointer as the key itself. */
- ptable_hints_store(MY_CXT.tbl, value, value);
+ ptable_store(MY_CXT.tbl, value, value);
  SvREFCNT_inc(value);
 
  return newSVuv(PTR2UV(value));
@@ -235,25 +270,9 @@ STATIC SV *indirect_hint(pTHX) {
 
 /* ... op -> source position ............................................... */
 
-#define PTABLE_NAME        ptable_map
-#define PTABLE_VAL_FREE(V) SvREFCNT_dec(V)
-
-#define pPTBL  pTHX
-#define pPTBL_ pTHX_
-#define aPTBL  aTHX
-#define aPTBL_ aTHX_
-
-#include "ptable.h"
-
-#define ptable_map_store(T, K, V) ptable_map_store(aTHX_ (T), (K), (V))
-#define ptable_map_clear(T)       ptable_map_clear(aTHX_ (T))
-
-STATIC ptable *indirect_map = NULL;
-
-STATIC const char *indirect_linestr = NULL;
-
 STATIC void indirect_map_store(pTHX_ const OP *o, const char *src, SV *sv) {
 #define indirect_map_store(O, S, N) indirect_map_store(aTHX_ (O), (S), (N))
+ dMY_CXT;
  SV *val;
 
  /* When lex_inwhat is set, we're in a quotelike environment (qq, qr, but not q)
@@ -262,9 +281,9 @@ STATIC void indirect_map_store(pTHX_ const OP *o, const char *src, SV *sv) {
 
  if (!PL_lex_inwhat) {
   const char *pl_linestr = SvPVX_const(PL_linestr);
-  if (indirect_linestr != pl_linestr) {
-   ptable_map_clear(indirect_map);
-   indirect_linestr = pl_linestr;
+  if (MY_CXT.linestr != pl_linestr) {
+   ptable_clear(MY_CXT.map);
+   MY_CXT.linestr = pl_linestr;
   }
  }
 
@@ -274,17 +293,18 @@ STATIC void indirect_map_store(pTHX_ const OP *o, const char *src, SV *sv) {
  SvIOK_on(val);
  SvIsUV_on(val);
 
- ptable_map_store(indirect_map, o, val);
+ ptable_store(MY_CXT.map, o, val);
 }
 
 STATIC const char *indirect_map_fetch(pTHX_ const OP *o, SV ** const name) {
 #define indirect_map_fetch(O, S) indirect_map_fetch(aTHX_ (O), (S))
+ dMY_CXT;
  SV *val;
 
- if (indirect_linestr != SvPVX_const(PL_linestr))
+ if (MY_CXT.linestr != SvPVX_const(PL_linestr))
   return NULL;
 
- val = ptable_fetch(indirect_map, o);
+ val = ptable_fetch(MY_CXT.map, o);
  if (!val) {
   *name = NULL;
   return NULL;
@@ -529,13 +549,14 @@ BOOT:
 {
  if (!indirect_initialized++) {
   HV *stash;
-#if I_THREADSAFE
-  MY_CXT_INIT;
-  MY_CXT.tbl   = ptable_new();
-  MY_CXT.owner = aTHX;
-#endif
 
-  indirect_map = ptable_new();
+  MY_CXT_INIT;
+  MY_CXT.map     = ptable_new();
+  MY_CXT.linestr = NULL;
+#if I_THREADSAFE
+  MY_CXT.tbl     = ptable_new();
+  MY_CXT.owner   = aTHX;
+#endif
 
   PERL_HASH(indirect_hash, __PACKAGE__, __PACKAGE_LEN__);
 
@@ -569,12 +590,14 @@ CODE:
   dMY_CXT;
   ud.tbl   = t = ptable_new();
   ud.owner = MY_CXT.owner;
-  ptable_walk(MY_CXT.tbl, indirect_ptable_hints_clone, &ud);
+  ptable_walk(MY_CXT.tbl, indirect_ptable_clone, &ud);
  }
  {
   MY_CXT_CLONE;
-  MY_CXT.tbl   = t;
-  MY_CXT.owner = aTHX;
+  MY_CXT.map     = ptable_new();
+  MY_CXT.linestr = NULL;
+  MY_CXT.tbl     = t;
+  MY_CXT.owner   = aTHX;
  }
  {
   level = PerlMemShared_malloc(sizeof *level);

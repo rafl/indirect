@@ -12,6 +12,7 @@ t/20-bad.t
 t/21-bad-fatal.t
 t/22-bad-mixed.t
 t/30-scope.t
+t/40-threads.t
 t/90-boilerplate.t
 t/91-pod.t
 t/92-pod-coverage.t
