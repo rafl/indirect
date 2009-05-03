@@ -4,6 +4,15 @@ use strict;
 use warnings;
 use ExtUtils::MakeMaker;
 
+my @DEFINES;
+
+# Threads, Windows and 5.8.x don't seem to be best friends
+if ($^O eq 'MSWin32' && $^V lt v5.9.0) {
+ push @DEFINES, '-DI_MULTIPLICITY=0';
+}
+
+@DEFINES = (DEFINE => join ' ', @DEFINES) if @DEFINES;
+
 my $dist = 'indirect';
 
 my %META = (
@@ -29,6 +38,7 @@ WriteMakefile(
     VERSION_FROM     => 'lib/indirect.pm',
     ABSTRACT_FROM    => 'lib/indirect.pm',
     PL_FILES         => {},
+    @DEFINES,
     PREREQ_PM        => {
         'XSLoader' => 0,
     },
