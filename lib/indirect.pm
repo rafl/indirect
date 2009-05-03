@@ -22,14 +22,26 @@ BEGIN {
 
 =head1 SYNOPSIS
 
+    # In a script
     no indirect;
     my $x = new Apple 1, 2, 3; # warns
     {
      use indirect;
      my $y = new Pear; # ok
+     {
+      no indirect hook => sub { die "You really wanted $_[0]\->$_[1]" };
+      my $z = new Pineapple 'fresh'; # croaks 'You really wanted Pineapple->new'
+     }
     }
     no indirect ':fatal';
     if (defied $foo) { ... } # croaks, note the typo
+
+    # From the command-line
+    perl -M-indirect -e 'my $x = new Banana;' # warns
+
+    # Or each time perl is ran
+    export PERL5OPT="-M-indirect"
+    perl -e 'my $y = new Coconut;' # warns
 
 =head1 DESCRIPTION
 
