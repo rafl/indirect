@@ -39,16 +39,6 @@ It currently does not warn when the object is enclosed between braces (like C<me
 
 This module is B<not> a source filter.
 
-=head1 METHODS
-
-=head2 C<unimport @opts>
-
-Magically called when C<no indirect @opts> is encountered. Turns the module on. If C<@opts> contains C<':fatal'>, the module will croak on the first indirect syntax met.
-
-=head2 C<import>
-
-Magically called at each C<use indirect>. Turns the module off.
-
 =cut
 
 BEGIN {
@@ -56,20 +46,63 @@ BEGIN {
  XSLoader::load(__PACKAGE__, $VERSION);
 }
 
-sub import {
- $^H{+(__PACKAGE__)} = undef;
- ();
-}
+=head1 METHODS
+
+=head2 C<< unimport [ hook => $hook | ':fatal' ] >>
+
+Magically called when C<no indirect @opts> is encountered.
+Turns the module on.
+The policy to apply depends on what is first found in C<@opts> :
+
+=over 4
+
+=item *
+
+If it's the string C<':fatal'>, the compilation will croak on the first indirect syntax met.
+
+=item *
+
+If the key/value pair C<< hook => $hook >> comes first, C<$hook> will be called for each error with the object name as C<$_[0]> and the method name as C<$_[1]>.
+
+=item *
+
+Otherwise, a warning will be emitted for each indirect construct.
+
+=back
+
+=cut
 
 my $msg = sub { "Indirect call of method \"$_[1]\" on object \"$_[0]\"" };
 
 sub unimport {
- (undef, my $type) = @_;
+ shift;
+
+ my $hook;
+ while (@_) {
+  my $arg = shift;
+  if ($arg eq 'hook') {
+   $hook = shift;
+  } elsif ($arg eq ':fatal') {
+   $hook = sub { die $msg->(@_) };
+  }
+  last if $hook;
+ }
+ $hook = sub { warn $msg->(@_) } unless defined $hook;
+
  $^H |= 0x00020000;
- my $cb = (defined $type and $type eq ':fatal')
-           ? sub { die  $msg->(@_) }
-           : sub { warn $msg->(@_) };
- $^H{+(__PACKAGE__)} = _tag($cb);
+ $^H{+(__PACKAGE__)} = _tag($hook);
+
+ ();
+}
+
+=head2 C<import>
+
+Magically called at each C<use indirect>. Turns the module off.
+
+=cut
+
+sub import {
+ $^H{+(__PACKAGE__)} = undef;
  ();
 }
 
