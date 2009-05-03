@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               indirect
-version:            0.11
+version:            0.12
 abstract:           Lexically warn about using the indirect object syntax.
 author:
     - Vincent Pit <perl@profvince.com>
@@ -18,12 +18,12 @@ resources:
     bugtracker:  http://rt.cpan.org/NoAuth/ReportBug.html?Queue=indirect
     homepage:    http://search.cpan.org/dist/indirect/
     license:     http://dev.perl.org/licenses/
-    repository:  http://git.profvince.com/perl/modules/indirect.git
+    repository:  http://git.profvince.com/?p=perl%2Fmodules%2Findirect.git
 no_index:
     directory:
         - t
         - inc
-generated_by:       ExtUtils::MakeMaker version 6.48
+generated_by:       ExtUtils::MakeMaker version 6.50
 meta-spec:
     url:      http://module-build.sourceforge.net/META-spec-v1.4.html
     version:  1.4

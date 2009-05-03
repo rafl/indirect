@@ -2,17 +2,29 @@ NAME
     indirect - Lexically warn about using the indirect object syntax.
 
 VERSION
-    Version 0.11
+    Version 0.12
 
 SYNOPSIS
+        # In a script
         no indirect;
         my $x = new Apple 1, 2, 3; # warns
         {
          use indirect;
          my $y = new Pear; # ok
+         {
+          no indirect hook => sub { die "You really wanted $_[0]\->$_[1]" };
+          my $z = new Pineapple 'fresh'; # croaks 'You really wanted Pineapple->new'
+         }
         }
         no indirect ':fatal';
         if (defied $foo) { ... } # croaks, note the typo
+
+        # From the command-line
+        perl -M-indirect -e 'my $x = new Banana;' # warns
+
+        # Or each time perl is ran
+        export PERL5OPT="-M-indirect"
+        perl -e 'my $y = new Coconut;' # warns
 
 DESCRIPTION
     When enabled (or disabled as some may prefer to say, since you actually
@@ -30,13 +42,25 @@ DESCRIPTION
     This module is not a source filter.
 
 METHODS
-  "unimport @opts"
+  "unimport [ hook => $hook | ':fatal' ]"
     Magically called when "no indirect @opts" is encountered. Turns the
-    module on. If @opts contains ':fatal', the module will croak on the
-    first indirect syntax met.
+    module on. The policy to apply depends on what is first found in @opts :
+
+    *   If it's the string ':fatal', the compilation will croak on the first
+        indirect syntax met.
+
+    *   If the key/value pair "hook => $hook" comes first, $hook will be
+        called for each error with the object name as $_[0] and the method
+        name as $_[1].
+
+    *   Otherwise, a warning will be emitted for each indirect construct.
 
   "import"
     Magically called at each "use indirect". Turns the module off.
+
+CONSTANTS
+  "I_THREADSAFE"
+    True iff the module could have been built when thread-safety features.
 
 CAVEATS
     "meth $obj" (no semicolon) at the end of a file won't be seen as an

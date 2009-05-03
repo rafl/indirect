@@ -1,5 +1,18 @@
 Revision history for indirect
 
+0.12    2009-05-03 14:30 UTC
+        + Add : You can specify the action to execute for each indirect
+                construct encountered with the new "hook => $coderef" unimport()
+                option.
+        + Chg : A ptable is now used internally for the op => position mapping.
+        + Fix : The pragma is now built with thread safety features enabled
+                whenever possible (a notable exception is perl 5.8.x on Win32,
+                as something seems wrong with its context handling).
+                The new indirect::I_THREADSAFE() constant reflects this.
+        + Fix : A negation precedence nit in indirect_ck_entersub().
+        + Tst : "use/no indirect" while parsing an indirect construct.
+        + Tst : Thread safety.
+
 0.11    2009-02-08 18:35 UTC
         + Fix : Potential collisions by hashing pointers with a wrong format.
         + Upd : Resources in META.yml.
