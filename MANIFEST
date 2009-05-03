@@ -7,9 +7,9 @@ lib/indirect.pm
 ptable.h
 samples/indirect.pl
 t/00-load.t
-t/10-good.t
-t/20-bad.t
-t/21-bad-fatal.t
+t/10-args.t
+t/20-good.t
+t/21-bad.t
 t/22-bad-mixed.t
 t/30-scope.t
 t/40-threads.t
