@@ -514,6 +514,8 @@ STATIC OP *indirect_ck_entersub(pTHX_ OP *o) {
 
    if (hint) {
     dSP;
+    onamesv = sv_mortalcopy(onamesv);
+    mnamesv = sv_mortalcopy(mnamesv);
 
     ENTER;
     SAVETMPS;
