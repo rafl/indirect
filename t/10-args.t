@@ -7,7 +7,7 @@ use Test::More tests => 4 + 1 + 1;
 
 sub expect {
  my ($pkg) = @_;
- return qr/^Indirect\s+call\s+of\s+method\s+"new"\s+on\s+object\s+"$pkg"/;
+ return qr/^Indirect\s+call\s+of\s+method\s+"new"\s+on\s+object\s+"$pkg"\s+at\s+\(eval\s+\d+\)\s+line\s+\d+/;
 }
 
 {
@@ -46,5 +46,5 @@ HERE
   my $x = new Hooked;
   $x = new AlsoNotReached;
 HERE
- is $@, "hook:Hooked:new\n", 'calls the specified hook';
+ like $@, qr/^hook:Hooked:new:\(eval\s+\d+\):\d+$/, 'calls the specified hook';
 }

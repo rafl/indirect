@@ -29,7 +29,7 @@ BEGIN {
 
 sub expect {
  my ($pkg) = @_;
- return qr/^Indirect\s+call\s+of\s+method\s+"new"\s+on\s+object\s+"$pkg"/;
+ return qr/^Indirect\s+call\s+of\s+method\s+"new"\s+on\s+object\s+"$pkg"\s+at\s+\(eval\s+\d+\)\s+line\s+\d+/;
 }
 
 {

@@ -76,7 +76,7 @@ If it's the string C<':fatal'>, the compilation will croak on the first indirect
 
 =item *
 
-If the key/value pair C<< hook => $hook >> comes first, C<$hook> will be called for each error with the object name as C<$_[0]> and the method name as C<$_[1]>.
+If the key/value pair C<< hook => $hook >> comes first, C<$hook> will be called for each error with the object name as C<$_[0]>, the method name as C<$_[1]>, the current file as C<$_[2]> and the line number as C<$_[3]>.
 
 =item *
 
@@ -86,7 +86,9 @@ Otherwise, a warning will be emitted for each indirect construct.
 
 =cut
 
-my $msg = sub { "Indirect call of method \"$_[1]\" on object \"$_[0]\"" };
+my $msg = sub {
+ "Indirect call of method \"$_[1]\" on object \"$_[0]\" at $_[2] line $_[3].\n"
+};
 
 sub unimport {
  shift;

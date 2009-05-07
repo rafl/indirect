@@ -42,7 +42,7 @@ SKIP:
    is($@, "ok\n", "use indirect, defined: $_");
 
    eval "die qq{the code compiled but it shouldn't have\n}; $prefix; no indirect; $_";
-   like($@, qr/^warn:Indirect\s+call\s+of\s+method\s+"meh"\s+on\s+object\s+"Dongs"/, "no indirect, defined: $_");
+   like($@, qr/^warn:Indirect\s+call\s+of\s+method\s+"meh"\s+on\s+object\s+"Dongs"\s+at\s+\(eval\s+\d+\)\s+line\s+\d+/, "no indirect, defined: $_");
   }
  }
 }

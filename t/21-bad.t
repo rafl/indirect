@@ -16,7 +16,12 @@ our ($y, $bloop);
 
 sub expect {
  my ($pkg) = @_;
- return qr/^warn:Indirect call of method "(?:new|meh|$pkg$pkg)" on object "(?:$pkg|newnew|\$(?:[xyz_\$]|(?:sploosh::)?sploosh|(?:main::)?bloop))"/
+ qr/^warn:Indirect\s+call\s+of\s+method\s+
+     "(?:new|meh|$pkg$pkg)"
+     \s+on\s+object\s+
+     "(?:$pkg|newnew|\$(?:[xyz_\$]|(?:sploosh::)?sploosh|(?:main::)?bloop))"
+     \s+at\s+\(eval\s+\d+\)\s+line\s+\d+
+   /x
 }
 
 {

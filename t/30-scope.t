@@ -12,7 +12,7 @@ my %wrong = map { $_ => 1 } 2, 3, 5, 7, 9, 10, 14, 15, 17, 18;
 
 sub expect {
  my ($pkg) = @_;
- return qr/^warn:Indirect\s+call\s+of\s+method\s+"new"\s+on\s+object\s+"$pkg"/;
+ return qr/^warn:Indirect\s+call\s+of\s+method\s+"new"\s+on\s+object\s+"$pkg"\s+at\s+\(eval\s+\d+\)\s+line\s+\d+/;
 }
 
 {
