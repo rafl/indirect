@@ -292,6 +292,7 @@ STATIC void indirect_map_store(pTHX_ const OP *o, const char *src, SV *sv) {
  SvUVX(val) = PTR2UV(src);
  SvIOK_on(val);
  SvIsUV_on(val);
+ SvREADONLY_on(val);
 
  ptable_store(MY_CXT.map, o, val);
 }
