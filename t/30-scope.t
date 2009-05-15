@@ -59,7 +59,7 @@ sub expect {
    no indirect;
    eval 'my $x = new Bar';
   }
-  if ($] < 5.010) {
+  if ($] < 5.009005) {
    is($w, '', "eval 'no indirect; my \$x = new Bar'");
   } else {
    like($w, expect('Bar'), "no indirect; eval 'my \$x = new Bar'");
