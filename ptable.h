@@ -80,7 +80,7 @@ typedef struct ptable {
 STATIC ptable *ptable_new(pPTBLMS) {
 #define ptable_new() ptable_new(aPTBLMS)
  ptable *t = PerlMemShared_malloc(sizeof *t);
- t->max   = 127;
+ t->max   = 15;
  t->items = 0;
  t->ary   = PerlMemShared_calloc(t->max + 1, sizeof *t->ary);
  return t;
