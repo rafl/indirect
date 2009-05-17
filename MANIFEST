@@ -1,5 +1,6 @@
 Changes
 MANIFEST
+META.yml
 Makefile.PL
 README
 indirect.xs
@@ -13,9 +14,7 @@ t/21-bad.t
 t/22-bad-mixed.t
 t/30-scope.t
 t/40-threads.t
-t/90-boilerplate.t
 t/91-pod.t
 t/92-pod-coverage.t
 t/95-portability-files.t
 t/99-kwalitee.t
-META.yml                                 Module meta-data (added by MakeMaker)
