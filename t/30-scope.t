@@ -6,7 +6,9 @@ use warnings;
 my $tests;
 BEGIN { $tests = 18 }
 
-use Test::More tests => 1 + $tests + 1 + 2;
+use Test::More tests => 1 + $tests + 1 + 2 + 2;
+
+use lib 't/lib';
 
 my %wrong = map { $_ => 1 } 2, 3, 5, 7, 9, 10, 14, 15, 17, 18;
 
@@ -65,6 +67,17 @@ sub expect {
    like($w, expect('Bar'), "no indirect; eval 'my \$x = new Bar'");
   }
  }
+}
+
+{
+ local $TODO = 'Need a workaround for this' if $] < 5.010001;
+ my @w;
+ {
+  local $SIG{__WARN__} = sub { push @w, join '', @_ };
+  eval 'no indirect; use indirect::TestRequired';
+ }
+ is         $@, '',  'require test didn\'t croak';
+ is_deeply \@w, [ ], 'pragma didn\'t propagate into the required file';
 }
 
 __DATA__
