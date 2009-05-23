@@ -521,18 +521,18 @@ STATIC OP *indirect_ck_entersub(pTHX_ OP *o) {
     line_t  line;
     dSP;
 
+    ENTER;
+    SAVETMPS;
+
     onamesv = sv_mortalcopy(onamesv);
     mnamesv = sv_mortalcopy(mnamesv);
 
 #ifdef USE_ITHREADS
-    file = newSVpv(CopFILE(&PL_compiling), 0);
+    file = sv_2mortal(newSVpv(CopFILE(&PL_compiling), 0));
 #else
     file = sv_mortalcopy(CopFILESV(&PL_compiling));
 #endif
     line = CopLINE(&PL_compiling);
-
-    ENTER;
-    SAVETMPS;
 
     PUSHMARK(SP);
     EXTEND(SP, 4);
