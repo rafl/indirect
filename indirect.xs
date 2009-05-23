@@ -516,7 +516,7 @@ STATIC OP *indirect_ck_entersub(pTHX_ OP *o) {
   if (mpos < opos) {
    SV *code = indirect_detag(hint);
 
-   if (hint) {
+   if (code) {
     SV     *file;
     line_t  line;
     dSP;
