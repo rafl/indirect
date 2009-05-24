@@ -186,7 +186,6 @@ STATIC void indirect_thread_cleanup(pTHX_ void *);
 
 STATIC void indirect_thread_cleanup(pTHX_ void *ud) {
  int *level = ud;
- SV  *id;
 
  if (*level) {
   *level = 0;
@@ -255,21 +254,21 @@ STATIC U32 indirect_hash = 0;
 
 STATIC SV *indirect_hint(pTHX) {
 #define indirect_hint() indirect_hint(aTHX)
- SV *id;
+ SV *hint;
 #if I_HAS_PERL(5, 9, 5)
- id = Perl_refcounted_he_fetch(aTHX_ PL_curcop->cop_hints_hash,
-                                     NULL,
-                                     __PACKAGE__, __PACKAGE_LEN__,
-                                     0,
-                                     indirect_hash);
+ hint = Perl_refcounted_he_fetch(aTHX_ PL_curcop->cop_hints_hash,
+                                       NULL,
+                                       __PACKAGE__, __PACKAGE_LEN__,
+                                       0,
+                                       indirect_hash);
 #else
  SV **val = hv_fetch(GvHV(PL_hintgv), __PACKAGE__, __PACKAGE_LEN__,
                                                                  indirect_hash);
  if (!val)
   return 0;
- id = *val;
+ hint = *val;
 #endif
- return (id && SvOK(id)) ? id : NULL;
+ return (hint && SvOK(hint)) ? hint : NULL;
 }
 
 /* ... op -> source position ............................................... */
