@@ -70,7 +70,6 @@ sub expect {
 }
 
 {
- local $TODO = 'Need a workaround for this' if $] < 5.010001;
  my @w;
  {
   local $SIG{__WARN__} = sub { push @w, join '', @_ };
