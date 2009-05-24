@@ -1,4 +1,4 @@
-package indirect::TestRequired;
+package indirect::TestRequired1;
 
 BEGIN { require strict; }
 

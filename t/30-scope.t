@@ -6,15 +6,16 @@ use warnings;
 my $tests;
 BEGIN { $tests = 18 }
 
-use Test::More tests => 1 + $tests + 1 + 2 + 2;
+use Test::More tests => 1 + $tests + 1 + 2 + 3 + 5;
 
 use lib 't/lib';
 
 my %wrong = map { $_ => 1 } 2, 3, 5, 7, 9, 10, 14, 15, 17, 18;
 
 sub expect {
- my ($pkg) = @_;
- return qr/^warn:Indirect\s+call\s+of\s+method\s+"new"\s+on\s+object\s+"$pkg"\s+at\s+\(eval\s+\d+\)\s+line\s+\d+/;
+ my ($pkg, $file) = @_;
+ $file = $file ? quotemeta $file : '\(eval\s+\d+\)';
+ return qr/^warn:Indirect\s+call\s+of\s+method\s+"new"\s+on\s+object\s+"$pkg"\s+at\s+$file\s+line\s+\d+/;
 }
 
 {
@@ -72,11 +73,35 @@ sub expect {
 {
  my @w;
  {
-  local $SIG{__WARN__} = sub { push @w, join '', @_ };
-  eval 'no indirect; use indirect::TestRequired';
+  local $SIG{__WARN__} = sub { push @w, join '', 'warn:', @_ };
+  eval "die qq{ok\\n}; no indirect; use indirect::TestRequired1; my \$x = new Foo;";
  }
- is         $@, '',  'require test didn\'t croak';
- is_deeply \@w, [ ], 'pragma didn\'t propagate into the required file';
+ is         $@, "ok\n",        'first require test doesn\'t croak prematurely';
+ my $w = shift @w;
+ like       $w, expect('Foo'), 'first require test catch errors in current scope';
+ is_deeply \@w, [ ],           'first require test doesn\'t propagate into the required file';
+}
+
+{
+ my @w;
+ {
+  local $SIG{__WARN__} = sub { push @w, join '', 'warn:', @_ };
+  eval "die qq{ok\\n}; no indirect; use indirect::TestRequired2; my \$x = new Bar;";
+ }
+ @w = grep !/^warn:Attempt\s+to\s+free\s+unreferenced/, @w if $] <= 5.008003;
+ is   $@, "ok\n", 'second require test doesn\'t croak prematurely';
+ my $w = shift @w;
+ like $w, expect('Baz', 't/lib/indirect/TestRequired2.pm'),
+                                     'second require test caught error for Baz';
+ SKIP: {
+  skip 'The pragma doesn\'t propagte into eval STRING before perl 5.10' => 1
+                                                               if $] < 5.009005;
+  $w = shift @w;
+  like $w, expect('Blech'), 'second require test caught error for Blech';
+ }
+ $w = shift @w;
+ like       $w, expect('Bar'), 'second require test caught error for Bar';
+ is_deeply \@w, [ ],           'second require test doesn\'t have more errors';
 }
 
 __DATA__

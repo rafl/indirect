@@ -18,4 +18,5 @@ t/91-pod.t
 t/92-pod-coverage.t
 t/95-portability-files.t
 t/99-kwalitee.t
-t/lib/indirect/TestRequired.pm
+t/lib/indirect/TestRequired1.pm
+t/lib/indirect/TestRequired2.pm
