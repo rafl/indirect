@@ -1,5 +1,15 @@
 Revision history for indirect
 
+0.13    2009-05-24 18:50 UTC
+        + Add : The hook now receives the file name and the line where the
+                error happened in respectively $_[2] and $_[3].
+        + Fix : Pass mortalized copies of the method name and object to the
+                hook. This seems to fix some rare crashes.
+        + Fix : Work around a bug in perl 5.10.0 and lower. Thanks Andrew Main
+                for teaching me about this issue.
+        + Fix : Report the correct file in error messages (a regression from the
+                previous version).
+
 0.12    2009-05-03 14:30 UTC
         + Add : You can specify the action to execute for each indirect
                 construct encountered with the new "hook => $coderef" unimport()

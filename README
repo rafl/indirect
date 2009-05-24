@@ -2,7 +2,7 @@ NAME
     indirect - Lexically warn about using the indirect object syntax.
 
 VERSION
-    Version 0.12
+    Version 0.13
 
 SYNOPSIS
         # In a script
@@ -50,8 +50,8 @@ METHODS
         indirect syntax met.
 
     *   If the key/value pair "hook => $hook" comes first, $hook will be
-        called for each error with the object name as $_[0] and the method
-        name as $_[1].
+        called for each error with the object name as $_[0], the method name
+        as $_[1], the current file as $_[2] and the line number as $_[3].
 
     *   Otherwise, a warning will be emitted for each indirect construct.
 
