@@ -134,12 +134,8 @@ typedef struct {
 
 #define PTABLE_NAME ptable_hints
 
-#if I_WORKAROUND_REQUIRE_PROPAGATION
-# define PTABLE_VAL_FREE(V) \
+#define PTABLE_VAL_FREE(V) \
    { indirect_hint_t *h = (V); SvREFCNT_dec(h->code); PerlMemShared_free(h); }
-#else
-# define PTABLE_VAL_FREE(V) SvREFCNT_dec(V)
-#endif
 
 #define pPTBL  pTHX
 #define pPTBL_ pTHX_
