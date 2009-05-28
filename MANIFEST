@@ -14,9 +14,12 @@ t/21-bad.t
 t/22-bad-mixed.t
 t/30-scope.t
 t/40-threads.t
+t/41-memory.t
 t/91-pod.t
 t/92-pod-coverage.t
 t/95-portability-files.t
 t/99-kwalitee.t
+t/lib/indirect/Test0/Fffff/Vvvvvvv.pm
+t/lib/indirect/Test0/Oooooo/Pppppppp.pm
 t/lib/indirect/TestRequired1.pm
 t/lib/indirect/TestRequired2.pm

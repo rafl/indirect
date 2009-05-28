@@ -167,6 +167,7 @@ typedef struct {
 #include "ptable.h"
 
 #define ptable_store(T, K, V) ptable_store(aTHX_ (T), (K), (V))
+#define ptable_delete(T, K)   ptable_delete(aTHX_ (T), (K))
 #define ptable_clear(T)       ptable_clear(aTHX_ (T))
 #define ptable_free(T)        ptable_free(aTHX_ (T))
 
@@ -391,6 +392,13 @@ STATIC const char *indirect_map_fetch(pTHX_ const OP *o, SV ** const name) {
  return INT2PTR(const char *, SvUVX(val));
 }
 
+STATIC void indirect_map_delete(pTHX_ const OP *o) {
+#define indirect_map_delete(O) indirect_map_delete(aTHX_ (O))
+ dMY_CXT;
+
+ ptable_delete(MY_CXT.map, o);
+}
+
 /* --- Check functions ----------------------------------------------------- */
 
 STATIC const char *indirect_find(pTHX_ SV *sv, const char *s) {
@@ -426,10 +434,13 @@ STATIC OP *indirect_ck_const(pTHX_ OP *o) {
 
  if (indirect_hint()) {
   SV *sv = cSVOPo_sv;
-  if (SvPOK(sv) && (SvTYPE(sv) >= SVt_PV))
+  if (SvPOK(sv) && (SvTYPE(sv) >= SVt_PV)) {
    indirect_map_store(o, indirect_find(sv, PL_oldbufptr), sv);
+   return o;
+  }
  }
 
+ indirect_map_delete(o);
  return o;
 }
 
@@ -494,7 +505,10 @@ STATIC OP *indirect_ck_rv2sv(pTHX_ OP *o) {
  }
 
 done:
- return CALL_FPTR(indirect_old_ck_rv2sv)(aTHX_ o);
+ o = CALL_FPTR(indirect_old_ck_rv2sv)(aTHX_ o);
+
+ indirect_map_delete(o);
+ return o;
 }
 
 /* ... ck_padany ........................................................... */
@@ -515,9 +529,11 @@ STATIC OP *indirect_ck_padany(pTHX_ OP *o) {
    sv = sv_2mortal(newSVpvn("$", 1));
    sv_catpvn_nomg(sv, s, t - s + 1);
    indirect_map_store(o, s, sv);
+   return o;
   }
  }
 
+ indirect_map_delete(o);
  return o;
 }
 
@@ -544,7 +560,10 @@ STATIC OP *indirect_ck_method(pTHX_ OP *o) {
  }
 
 done:
- return CALL_FPTR(indirect_old_ck_method)(aTHX_ o);
+ o = CALL_FPTR(indirect_old_ck_method)(aTHX_ o);
+
+ indirect_map_delete(o);
+ return o;
 }
 
 /* ... ck_entersub ......................................................... */
@@ -571,6 +590,18 @@ STATIC OP *indirect_ck_entersub(pTHX_ OP *o) {
   } while (oop->op_type != OP_PUSHMARK);
   oop = oop->op_sibling;
   mop = lop->op_last;
+
+  if (!oop)
+   goto done;
+
+  switch (oop->op_type) {
+   case OP_CONST:
+   case OP_RV2SV:
+   case OP_PADSV:
+    break;
+   default:
+    goto done;
+  }
 
   if (mop->op_type == OP_METHOD)
    mop = cUNOPx(mop)->op_first;

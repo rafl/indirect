@@ -117,6 +117,16 @@ STATIC void *ptable_fetch(const ptable * const t, const void * const key) {
 }
 #endif /* !ptable_fetch */
 
+STATIC void PTABLE_PREFIX(_delete)(pPTBL_ const ptable * const t, const void * const key) {
+ ptable_ent *const ent = ptable_find(t, key);
+
+ if (ent) {
+  void *val = ent->val;
+  PTABLE_VAL_FREE(val);
+  ent->val = NULL;
+ }
+}
+
 #ifndef ptable_split
 STATIC void ptable_split(pPTBLMS_ ptable * const t) {
 #define ptable_split(T) ptable_split(aPTBLMS_ (T))
