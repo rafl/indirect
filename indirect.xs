@@ -163,7 +163,6 @@ typedef struct {
 #include "ptable.h"
 
 #define ptable_store(T, K, V) ptable_store(aTHX_ (T), (K), (V))
-#define ptable_delete(T, K)   ptable_delete(aTHX_ (T), (K))
 #define ptable_clear(T)       ptable_clear(aTHX_ (T))
 #define ptable_free(T)        ptable_free(aTHX_ (T))
 
@@ -392,7 +391,7 @@ STATIC void indirect_map_delete(pTHX_ const OP *o) {
 #define indirect_map_delete(O) indirect_map_delete(aTHX_ (O))
  dMY_CXT;
 
- ptable_delete(MY_CXT.map, o);
+ ptable_store(MY_CXT.map, o, NULL);
 }
 
 /* --- Check functions ----------------------------------------------------- */

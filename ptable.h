@@ -117,16 +117,6 @@ STATIC void *ptable_fetch(const ptable * const t, const void * const key) {
 }
 #endif /* !ptable_fetch */
 
-STATIC void PTABLE_PREFIX(_delete)(pPTBL_ const ptable * const t, const void * const key) {
- ptable_ent *const ent = ptable_find(t, key);
-
- if (ent) {
-  void *val = ent->val;
-  PTABLE_VAL_FREE(val);
-  ent->val = NULL;
- }
-}
-
 #ifndef ptable_split
 STATIC void ptable_split(pPTBLMS_ ptable * const t) {
 #define ptable_split(T) ptable_split(aPTBLMS_ (T))
@@ -165,7 +155,7 @@ STATIC void PTABLE_PREFIX(_store)(pPTBL_ ptable * const t, const void * const ke
   void *oldval = ent->val;
   PTABLE_VAL_FREE(oldval);
   ent->val = val;
- } else {
+ } else if (val) {
   const UV i = PTABLE_HASH(key) & t->max;
   ent = PerlMemShared_malloc(sizeof *ent);
   ent->key  = key;
