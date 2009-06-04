@@ -130,6 +130,8 @@ True iff the module could have been built when thread-safety features.
 
 =head1 CAVEATS
 
+The implementation was tweaked to work around several limitations of vanilla C<perl> pragmas : it's thread safe, and doesn't suffer from a C<perl 5.8.x-5.10.0> bug that causes all pragmas to propagate into C<require>d scopes.
+
 C<meth $obj> (no semicolon) at the end of a file won't be seen as an indirect object syntax, although it will as soon as there is another token before the end (as in C<meth $obj;> or C<meth $obj 1>).
 
 With 5.8 perls, the pragma does not propagate into C<eval STRING>.
