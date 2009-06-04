@@ -1,5 +1,10 @@
 Revision history for indirect
 
+0.14    2009-06-04 21:55 UTC
+        + Fix : Prevent bogus invalid syntaxes caused by reallocated memory
+                chunks. Thanks Andrew Main for reporting with a reproducible
+                test case.
+
 0.13    2009-05-24 18:50 UTC
         + Add : The hook now receives the file name and the line where the
                 error happened in respectively $_[2] and $_[3].

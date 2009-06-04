@@ -2,7 +2,7 @@ NAME
     indirect - Lexically warn about using the indirect object syntax.
 
 VERSION
-    Version 0.13
+    Version 0.14
 
 SYNOPSIS
         # In a script
@@ -31,8 +31,8 @@ DESCRIPTION
     turn it on by calling "no indirect"), this pragma warns about indirect
     object syntax constructs that may have slipped into your code. This
     syntax is now considered harmful, since its parsing has many quirks and
-    its use is error prone (when "sub" isn't defined, "sub $x" is actually
-    interpreted as "$x->sub").
+    its use is error prone (when "swoosh" isn't defined, "swoosh $x"
+    actually compiles to "$x->swoosh").
 
     It currently does not warn when the object is enclosed between braces
     (like "meth { $obj } @args") or for core functions ("print" or "say").
@@ -63,6 +63,11 @@ CONSTANTS
     True iff the module could have been built when thread-safety features.
 
 CAVEATS
+    The implementation was tweaked to work around several limitations of
+    vanilla "perl" pragmas : it's thread safe, and doesn't suffer from a
+    "perl 5.8.x-5.10.0" bug that causes all pragmas to propagate into
+    "require"d scopes.
+
     "meth $obj" (no semicolon) at the end of a file won't be seen as an
     indirect object syntax, although it will as soon as there is another
     token before the end (as in "meth $obj;" or "meth $obj 1").
