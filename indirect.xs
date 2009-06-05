@@ -323,7 +323,7 @@ STATIC U32 indirect_hash = 0;
 
 STATIC SV *indirect_hint(pTHX) {
 #define indirect_hint() indirect_hint(aTHX)
- SV *hint, *code;
+ SV *hint;
 #if I_HAS_PERL(5, 9, 5)
  hint = Perl_refcounted_he_fetch(aTHX_ PL_curcop->cop_hints_hash,
                                        NULL,
